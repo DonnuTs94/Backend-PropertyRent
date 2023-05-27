@@ -6,20 +6,30 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User{
   id String @id @default(uuid())
-  username String
+  username String @unique
   email String @unique
-  gender String
-  birthday DateTime
+  gender Gender
+  birthday DateTime @db.Date
   password String
-  profilePic String?
-  role String
-  isVerified Boolean
+  profilePicUrl String?
+  role  Role 
+  isVerified Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  User
+  Tenant
+}
+
+enum Gender {
+  Male
+  Female
 }
