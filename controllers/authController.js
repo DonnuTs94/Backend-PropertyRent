@@ -98,6 +98,9 @@ const authController = {
               username: usernameOrEmail,
             },
           ],
+          AND: {
+            role: "User",
+          },
         },
       })
 
@@ -118,11 +121,11 @@ const authController = {
         })
       }
 
-      delete findUserByEmailOrUsername.dataValues.password
+      delete findUserByEmailOrUsername.password
 
-      console.log(findUserByEmailOrUsername)
-
-      const token = signToken(findUserByEmailOrUsername.toJSON())
+      const token = signToken({
+        id: findUserByEmailOrUsername.id,
+      })
 
       return res.status(200).json({
         message: "User Login",
@@ -133,6 +136,59 @@ const authController = {
       console.log(err)
       return res.status(500).json({
         message: err.messasge,
+      })
+    }
+  },
+  loginTenant: async (req, res) => {
+    const { usernameOrEmail, password } = req.body
+
+    try {
+      const findUserByEmailOrUsername = await prisma.user.findFirst({
+        where: {
+          OR: [
+            {
+              email: usernameOrEmail,
+            },
+            {
+              username: usernameOrEmail,
+            },
+          ],
+          AND: {
+            role: "Tenant",
+          },
+        },
+      })
+
+      if (!findUserByEmailOrUsername) {
+        return res.status(400).json({
+          message: "Tenant not found",
+        })
+      }
+
+      const passwordIsValid = bcrypt.compareSync(
+        password,
+        findUserByEmailOrUsername.password
+      )
+
+      if (!passwordIsValid) {
+        return res.status(400).json({
+          message: "Password invalid",
+        })
+      }
+
+      delete findUserByEmailOrUsername.password
+
+      const token = signToken({ id: findUserByEmailOrUsername.id })
+
+      return res.status(200).json({
+        message: "Tenant Login",
+        data: findUserByEmailOrUsername,
+        token,
+      })
+    } catch (err) {
+      console.log(err)
+      res.status(500).json({
+        message: err.message,
       })
     }
   },
