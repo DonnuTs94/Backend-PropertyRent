@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client")
 const bcrypt = require("bcrypt")
 const { signToken } = require("../lib/jwt")
+const { roleEnum } = require("../configs/constant.js")
 
 const prisma = new PrismaClient()
 
@@ -18,7 +19,7 @@ const authController = {
           password: hashedPassword,
           birthday: birthdayDate,
           gender: gender,
-          role: "User",
+          role: roleEnum.USER,
         },
       })
 
@@ -39,7 +40,6 @@ const authController = {
         })
       }
 
-      console.log(err)
       res.status(500).json({
         message: err.message,
       })
@@ -58,7 +58,7 @@ const authController = {
           password: hashedPassword,
           birthday: birthdayDate,
           gender: gender,
-          role: "Tenant",
+          role: roleEnum.TENANT,
         },
       })
 
@@ -79,7 +79,6 @@ const authController = {
         })
       }
 
-      console.log(err)
       res.status(500).json({
         message: err.message,
       })
@@ -99,7 +98,7 @@ const authController = {
             },
           ],
           AND: {
-            role: "User",
+            role: roleEnum.USER,
           },
         },
       })
@@ -128,12 +127,11 @@ const authController = {
       })
 
       return res.status(200).json({
-        message: "User Login",
+        message: "User Successfully Login",
         data: findUserByEmailOrUsername,
         token,
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.messasge,
       })
@@ -154,7 +152,7 @@ const authController = {
             },
           ],
           AND: {
-            role: "Tenant",
+            role: roleEnum.TENANT,
           },
         },
       })
@@ -181,12 +179,11 @@ const authController = {
       const token = signToken({ id: findUserByEmailOrUsername.id })
 
       return res.status(200).json({
-        message: "Tenant Login",
+        message: "Tenant Successfully Login",
         data: findUserByEmailOrUsername,
         token,
       })
     } catch (err) {
-      console.log(err)
       res.status(500).json({
         message: err.message,
       })

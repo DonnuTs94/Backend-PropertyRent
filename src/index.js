@@ -11,9 +11,8 @@ app.use(express.json())
 app.use("/auth", authRoute)
 
 app.listen(PORT, (err) => {
+  console.log(`SERVER RUNING on Port ${PORT}`)
   if (err) {
     console.log(`ERROR: ${err}`)
-  } else {
-    console.log(`APP RUNING at ${PORT}`)
   }
 })
