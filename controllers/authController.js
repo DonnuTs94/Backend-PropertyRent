@@ -189,6 +189,29 @@ const authController = {
       })
     }
   },
+  refreshToken: async (req, res) => {
+    try {
+      const findUserById = await prisma.user.findUnique({
+        where: {
+          id: req.user.id,
+        },
+      })
+
+      const renewedToken = signToken({
+        id: req.user.id,
+      })
+
+      return res.status(200).json({
+        message: "Renewed user token",
+        data: findUserById,
+        token: renewedToken,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = authController
