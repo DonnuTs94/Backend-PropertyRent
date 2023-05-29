@@ -279,7 +279,7 @@ const authController = {
 
       const updatePassword = bcrypt.hashSync(newPassword, 5)
 
-      const newUserPassword = await prisma.user.update({
+      const newPasswordUser = await prisma.user.update({
         where: {
           id: currentUser.id,
         },
@@ -288,9 +288,52 @@ const authController = {
         },
       })
 
+      delete newPasswordUser.password
+
       return res.status(200).json({
         message: "Successfully update user password",
-        data: newUserPassword,
+        data: newPasswordUser,
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  updatePasswordTenant: async (req, res) => {
+    const { password, newPassword } = req.body
+    try {
+      const currentUser = await prisma.user.findFirst({
+        where: {
+          id: req.user.id,
+        },
+      })
+
+      const passwordIsvalid = bcrypt.compareSync(password, currentUser.password)
+
+      if (!passwordIsvalid) {
+        return res.status(400).json({
+          message: "Password invalid",
+        })
+      }
+
+      const updatePassword = bcrypt.hashSync(newPassword, 5)
+
+      const newPasswordTenant = await prisma.user.update({
+        where: {
+          id: currentUser.id,
+        },
+        data: {
+          password: updatePassword,
+        },
+      })
+
+      delete newPasswordTenant
+
+      return res.status(200).json({
+        message: "Successfully update tenant password",
+        data: newPasswordTenant,
       })
     } catch (err) {
       console.log(err)

@@ -30,5 +30,11 @@ router.patch(
   verifyRoleUser,
   authController.updatePasswordUser
 )
+router.patch(
+  "/tenant/password",
+  verifyToken,
+  verifyRoleTenant,
+  authController.updatePasswordTenant
+)
 
 module.exports = router
