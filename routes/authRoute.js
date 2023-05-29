@@ -1,7 +1,11 @@
 const express = require("express")
 const authController = require("../controllers/authController")
 const router = express.Router()
-const { verifyToken, verifyRoleUser } = require("../middlewares/authMiddleware")
+const {
+  verifyToken,
+  verifyRoleUser,
+  verifyRoleTenant,
+} = require("../middlewares/authMiddleware")
 
 router.post("/register/user", authController.registerUser)
 router.post("/register/tenant", authController.registerTenant)
@@ -13,6 +17,12 @@ router.patch(
   verifyToken,
   verifyRoleUser,
   authController.updateUserProfile
+)
+router.patch(
+  "/tenant",
+  verifyToken,
+  verifyRoleTenant,
+  authController.updateTenantProfile
 )
 
 module.exports = router

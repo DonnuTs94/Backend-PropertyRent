@@ -197,12 +197,14 @@ const authController = {
         },
       })
 
+      delete findUserById.password
+
       const renewedToken = signToken({
         id: req.user.id,
       })
 
       return res.status(200).json({
-        message: "Renewed user token",
+        message: "User token renewed",
         data: findUserById,
         token: renewedToken,
       })
@@ -214,21 +216,6 @@ const authController = {
   },
   updateUserProfile: async (req, res) => {
     try {
-      // const findUser = await prisma.user.findFirst({
-      //   where: {
-      //     id: req.user.id,
-      //     AND: {
-      //       role: roleEnum.USER,
-      //     },
-      //   },
-      // })
-
-      // if (!findUser) {
-      //   return res.status(400).json({
-      //     message: "User unauthorized",
-      //   })
-      // }
-
       const updateUserData = await prisma.user.update({
         where: {
           id: req.user.id,
@@ -238,12 +225,36 @@ const authController = {
         },
       })
 
+      delete updateUserData.password
+
       return res.status(200).json({
         message: "Update success",
         data: updateUserData,
       })
     } catch (err) {
-      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  updateTenantProfile: async (req, res) => {
+    try {
+      const updateTenantData = await prisma.user.update({
+        where: {
+          id: req.user.id,
+        },
+        data: {
+          ...req.body,
+        },
+      })
+
+      delete updateTenantData.password
+
+      return res.status(200).json({
+        message: "Update success",
+        data: updateTenantData,
+      })
+    } catch (err) {
       return res.status(500).json({
         message: err.message,
       })

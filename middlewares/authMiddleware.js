@@ -33,7 +33,7 @@ const verifyToken = (req, res, next) => {
   }
 }
 
-const verifyRoleUser = async (req, res) => {
+const verifyRoleUser = async (req, res, next) => {
   try {
     const findUser = await prisma.user.findFirst({
       where: {
@@ -49,6 +49,7 @@ const verifyRoleUser = async (req, res) => {
         message: "User unauthorized",
       })
     }
+    next()
   } catch (err) {
     return res.status(500).json({
       message: "Server Error",
@@ -56,7 +57,7 @@ const verifyRoleUser = async (req, res) => {
   }
 }
 
-const verifyRoleTenant = async (req, res) => {
+const verifyRoleTenant = async (req, res, next) => {
   try {
     const findTenant = await prisma.user.findFirst({
       where: {
@@ -72,6 +73,7 @@ const verifyRoleTenant = async (req, res) => {
         message: "Tenant unauthorized",
       })
     }
+    next()
   } catch (err) {
     return res.status(500).json({
       message: "Server Error",
