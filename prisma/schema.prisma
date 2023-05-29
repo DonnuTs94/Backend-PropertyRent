@@ -10,18 +10,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id String @id @default(uuid())
-  username String @unique
-  email String @unique
-  gender Gender
-  birthday DateTime @db.Date
-  password String
+model User {
+  id            String   @id @default(uuid())
+  username      String   @unique
+  email         String   @unique
+  gender        Gender
+  birthday      DateTime @db.Date
+  password      String
   profilePicUrl String?
-  role  Role 
-  isVerified Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role          Role
+  isVerified    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 enum Role {
