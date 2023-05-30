@@ -2,6 +2,7 @@ const { PrismaClient } = require("@prisma/client")
 const bcrypt = require("bcrypt")
 const { signToken } = require("../lib/jwt")
 const { roleEnum } = require("../configs/constant.js")
+const fs = require("fs")
 
 const prisma = new PrismaClient()
 
@@ -295,7 +296,6 @@ const authController = {
         data: newPasswordUser,
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
@@ -335,6 +335,21 @@ const authController = {
         message: "Successfully update tenant password",
         data: newPasswordTenant,
       })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  uploadProfileUser: async (req, res) => {
+    try {
+      const foundUserProfile = await prisma.user.findFirst({
+        where: {
+          id: req.user.id,
+        },
+      })
+
+      console.log(foundUserProfile)
     } catch (err) {
       console.log(err)
       return res.status(500).json({
