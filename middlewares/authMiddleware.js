@@ -1,6 +1,8 @@
 const { validToken } = require("../lib/jwt")
 const { PrismaClient } = require("@prisma/client")
 const { roleEnum } = require("../configs/constant.js")
+const { upload } = require("../lib/uploader")
+const multer = require("multer")
 
 const prisma = new PrismaClient()
 
@@ -81,4 +83,41 @@ const verifyRoleTenant = async (req, res, next) => {
   }
 }
 
-module.exports = { verifyToken, verifyRoleUser, verifyRoleTenant }
+const validateProfileUpload = (req, res, next) => {
+  upload({
+    acceptedFileTypes: ["png", "jpg", "jpeg"],
+    filePrefix: "profile_pic_url",
+    maxSize: 2 * 1024 * 1024,
+  }).single("profilePicUrl")(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({
+          message: "File too large",
+        })
+      } else {
+        return res.status(400).json({
+          message: "File upload error: " + err.message,
+        })
+      }
+    } else if (err) {
+      return res.status(400).json({
+        message: "File upload error: " + err.message,
+      })
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "No file selected",
+      })
+    }
+
+    next()
+  })
+}
+
+module.exports = {
+  verifyToken,
+  verifyRoleUser,
+  verifyRoleTenant,
+  validateProfileUpload,
+}

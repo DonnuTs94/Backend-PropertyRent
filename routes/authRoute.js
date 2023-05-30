@@ -5,8 +5,8 @@ const {
   verifyToken,
   verifyRoleUser,
   verifyRoleTenant,
+  validateProfileUpload,
 } = require("../middlewares/authMiddleware")
-const { upload } = require("../lib/uploader")
 
 router.post("/register/user", authController.registerUser)
 router.post("/register/tenant", authController.registerTenant)
@@ -42,11 +42,7 @@ router.patch(
   "/user/profile",
   verifyToken,
   verifyRoleUser,
-  upload({
-    acceptedFileTypes: ["png", "jpg", "jpeg"],
-    filePrefix: "profile_pic_url",
-    maxSize: 2 * 1024 * 1024,
-  }).single("profilePicUrl"),
+  validateProfileUpload,
   authController.uploadProfileUser
 )
 

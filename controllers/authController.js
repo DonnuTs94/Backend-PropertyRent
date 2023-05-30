@@ -350,7 +350,6 @@ const authController = {
         },
       })
 
-      console.log(foundUserProfile.profilePicUrl, "first")
       if (foundUserProfile.profilePicUrl) {
         fs.unlinkSync(path + foundUserProfile.profilePicUrl)
       }
@@ -364,13 +363,13 @@ const authController = {
         },
       })
 
-      console.log(req.file.filename, "second")
+      delete uploadProfileUrl.password
+
       return res.status(200).json({
         message: "Successfully upload profile picture",
         data: uploadProfileUrl,
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
