@@ -342,6 +342,7 @@ const authController = {
     }
   },
   uploadProfileUser: async (req, res) => {
+    const path = "public/"
     try {
       const foundUserProfile = await prisma.user.findFirst({
         where: {
@@ -349,7 +350,25 @@ const authController = {
         },
       })
 
-      console.log(foundUserProfile)
+      console.log(foundUserProfile.profilePicUrl, "first")
+      if (foundUserProfile.profilePicUrl) {
+        fs.unlinkSync(path + foundUserProfile.profilePicUrl)
+      }
+
+      const uploadProfileUrl = await prisma.user.update({
+        where: {
+          id: foundUserProfile.id,
+        },
+        data: {
+          profilePicUrl: req.file.filename,
+        },
+      })
+
+      console.log(req.file.filename, "second")
+      return res.status(200).json({
+        message: "Successfully upload profile picture",
+        data: uploadProfileUrl,
+      })
     } catch (err) {
       console.log(err)
       return res.status(500).json({
