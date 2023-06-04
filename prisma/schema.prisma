@@ -11,17 +11,61 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  username      String   @unique
-  email         String   @unique
+  id            String       @id @default(uuid())
+  username      String       @unique
+  email         String       @unique
   gender        Gender
-  birthday      DateTime @db.Date
+  birthday      DateTime     @db.Date
   password      String
   profilePicUrl String?
   role          Role
-  isVerified    Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  isVerified    Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  property      Properties[]
+}
+
+model Properties {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String     @db.Text
+  rules       String     @db.Text
+  facilities  String     @db.Text
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deleted     Boolean    @default(false)
+  user        User       @relation(fields: [userId], references: [id])
+  userId      String
+  category    Categories @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  province    Provincies @relation(fields: [provinceId], references: [id])
+  provinceId  Int
+}
+
+model Categories {
+  id        Int          @id @default(autoincrement())
+  category  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  property  Properties[]
+}
+
+model Provincies {
+  id        Int          @id @default(autoincrement())
+  provincy  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  property  Properties[]
+  city      Cities[]
+}
+
+model Cities {
+  id         Int        @id @default(autoincrement())
+  city       String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  province   Provincies @relation(fields: [provinceId], references: [id])
+  provinceId Int
 }
 
 enum Role {
