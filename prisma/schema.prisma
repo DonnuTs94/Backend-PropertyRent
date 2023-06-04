@@ -11,17 +11,52 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  username      String   @unique
-  email         String   @unique
+  id            String       @id @default(uuid())
+  username      String       @unique
+  email         String       @unique
   gender        Gender
-  birthday      DateTime @db.Date
+  birthday      DateTime     @db.Date
   password      String
   profilePicUrl String?
   role          Role
-  isVerified    Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  isVerified    Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  property      Properties[]
+}
+
+model Properties {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String     @db.Text
+  rules       String     @db.Text
+  facilities  String     @db.Text
+  userId      String
+  categoryId  Int
+  provinceId  Int
+  user        User       @relation(fields: [userId], references: [id])
+  category    Categories @relation(fields: [categoryId], references: [id])
+  Province    Provincies @relation(fields: [provinceId], references: [id])
+}
+
+model Categories {
+  id       Int          @id @default(autoincrement())
+  category String
+  propert  Properties[]
+}
+
+model Provincies {
+  id       Int          @id @default(autoincrement())
+  provincy String
+  property Properties[]
+  city     Cities[]
+}
+
+model Cities {
+  id         Int        @id @default(autoincrement())
+  city       String
+  Province   Provincies @relation(fields: [provinceId], references: [id])
+  provinceId Int
 }
 
 enum Role {
