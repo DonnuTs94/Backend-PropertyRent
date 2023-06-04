@@ -46,4 +46,12 @@ router.patch(
   authController.uploadProfileUser
 )
 
+router.patch(
+  "/tenant/profile",
+  verifyToken,
+  verifyRoleTenant,
+  validateProfileUpload,
+  authController.uploadProfileTenant
+)
+
 module.exports = router

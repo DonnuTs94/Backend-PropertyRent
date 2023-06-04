@@ -87,7 +87,7 @@ const validateProfileUpload = (req, res, next) => {
   upload({
     acceptedFileTypes: ["png", "jpg", "jpeg"],
     filePrefix: "profile_pic_url",
-    maxSize: 2 * 1024 * 1024,
+    maxSize: 2 * 1024 * 1024, //2MB
   }).single("profilePicUrl")(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_SIZE") {

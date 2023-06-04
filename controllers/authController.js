@@ -13,6 +13,27 @@ const authController = {
       const hashedPassword = bcrypt.hashSync(password, 5)
       const birthdayDate = new Date(birthday)
 
+      if (!email || !username || !password || !birthday || !gender) {
+        return res.status(400).json({
+          message: "input must be filled!",
+        })
+      }
+
+      if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+        return res.status(400).json({
+          message: "Incorrect e-mail format",
+        })
+      }
+
+      if (
+        !password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/)
+      ) {
+        return res.status(400).json({
+          message:
+            "Password length minimum 8 and must have 1 number and must have 1 capital",
+        })
+      }
+
       const newUser = await prisma.user.create({
         data: {
           email: email,
@@ -52,7 +73,28 @@ const authController = {
       const hashedPassword = bcrypt.hashSync(password, 5)
       const birthdayDate = new Date(birthday)
 
-      const newUser = await prisma.user.create({
+      if (!email || !username || !password || !birthday || !gender) {
+        return res.status(400).json({
+          message: "input must be filled!",
+        })
+      }
+
+      if (!email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+        return res.status(400).json({
+          message: "Incorrect e-mail format",
+        })
+      }
+
+      if (
+        !password.match(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/)
+      ) {
+        return res.status(400).json({
+          message:
+            "Password length minimum 8 and must have 1 number and must have 1 capital",
+        })
+      }
+
+      const newTenant = await prisma.user.create({
         data: {
           email: email,
           username: username,
@@ -64,7 +106,7 @@ const authController = {
       })
 
       res.status(200).json({
-        newUser,
+        newTenant,
         message: "Tenant register",
       })
     } catch (err) {
@@ -280,6 +322,17 @@ const authController = {
 
       const updatePassword = bcrypt.hashSync(newPassword, 5)
 
+      if (
+        !newPassword.match(
+          /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/
+        )
+      ) {
+        return res.status(400).json({
+          message:
+            "Password length minimum 8 and must have 1 number and must have 1 capital",
+        })
+      }
+
       const newPasswordUser = await prisma.user.update({
         where: {
           id: currentUser.id,
@@ -320,6 +373,17 @@ const authController = {
 
       const updatePassword = bcrypt.hashSync(newPassword, 5)
 
+      if (
+        !newPassword.match(
+          /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/
+        )
+      ) {
+        return res.status(400).json({
+          message:
+            "Password length minimum 8 and must have 1 number and must have 1 capital",
+        })
+      }
+
       const newPasswordTenant = await prisma.user.update({
         where: {
           id: currentUser.id,
@@ -357,6 +421,40 @@ const authController = {
       const uploadProfileUrl = await prisma.user.update({
         where: {
           id: foundUserProfile.id,
+        },
+        data: {
+          profilePicUrl: req.file.filename,
+        },
+      })
+
+      delete uploadProfileUrl.password
+
+      return res.status(200).json({
+        message: "Successfully upload profile picture",
+        data: uploadProfileUrl,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  uploadProfileTenant: async (req, res) => {
+    const path = "public/"
+    try {
+      const foundTenantProfile = await prisma.user.findFirst({
+        where: {
+          id: req.user.id,
+        },
+      })
+
+      if (foundTenantProfile.profilePicUrl) {
+        fs.unlinkSync(path + foundTenantProfile.profilePicUrl)
+      }
+
+      const uploadProfileUrl = await prisma.user.update({
+        where: {
+          id: foundTenantProfile.id,
         },
         data: {
           profilePicUrl: req.file.filename,
