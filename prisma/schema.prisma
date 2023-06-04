@@ -27,35 +27,44 @@ model User {
 
 model Properties {
   id          Int        @id @default(autoincrement())
-  title       String
+  name        String
   description String     @db.Text
   rules       String     @db.Text
   facilities  String     @db.Text
-  userId      String
-  categoryId  Int
-  provinceId  Int
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deleted     Boolean    @default(false)
   user        User       @relation(fields: [userId], references: [id])
+  userId      String
   category    Categories @relation(fields: [categoryId], references: [id])
-  Province    Provincies @relation(fields: [provinceId], references: [id])
+  categoryId  Int
+  province    Provincies @relation(fields: [provinceId], references: [id])
+  provinceId  Int
 }
 
 model Categories {
-  id       Int          @id @default(autoincrement())
-  category String
-  propert  Properties[]
+  id        Int          @id @default(autoincrement())
+  category  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  property  Properties[]
 }
 
 model Provincies {
-  id       Int          @id @default(autoincrement())
-  provincy String
-  property Properties[]
-  city     Cities[]
+  id        Int          @id @default(autoincrement())
+  provincy  String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  property  Properties[]
+  city      Cities[]
 }
 
 model Cities {
   id         Int        @id @default(autoincrement())
   city       String
-  Province   Provincies @relation(fields: [provinceId], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  province   Provincies @relation(fields: [provinceId], references: [id])
   provinceId Int
 }
 
