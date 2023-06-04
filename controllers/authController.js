@@ -13,7 +13,7 @@ const authController = {
       const hashedPassword = bcrypt.hashSync(password, 5)
       const birthdayDate = new Date(birthday)
 
-      if (!email || !username || !password || !birthday || !gender) {
+      if (!username || !birthday || !gender) {
         return res.status(400).json({
           message: "input must be filled!",
         })
@@ -30,7 +30,7 @@ const authController = {
       ) {
         return res.status(400).json({
           message:
-            "Password length minimum 8 and must have 1 number and must have 1 capital",
+            "Password length minimum 8 ,must have 1 number, 1 capital and 1 symbol",
         })
       }
 
@@ -73,7 +73,7 @@ const authController = {
       const hashedPassword = bcrypt.hashSync(password, 5)
       const birthdayDate = new Date(birthday)
 
-      if (!email || !username || !password || !birthday || !gender) {
+      if (!username || !birthday || !gender) {
         return res.status(400).json({
           message: "input must be filled!",
         })
@@ -90,7 +90,7 @@ const authController = {
       ) {
         return res.status(400).json({
           message:
-            "Password length minimum 8 and must have 1 number and must have 1 capital",
+            "Password length minimum 8 ,must have 1 number, 1 capital and 1 symbol",
         })
       }
 
@@ -329,7 +329,7 @@ const authController = {
       ) {
         return res.status(400).json({
           message:
-            "Password length minimum 8 and must have 1 number and must have 1 capital",
+            "Password length minimum 8 ,must have 1 number, 1 capital and 1 symbol",
         })
       }
 
@@ -380,7 +380,7 @@ const authController = {
       ) {
         return res.status(400).json({
           message:
-            "Password length minimum 8 and must have 1 number and must have 1 capital",
+            "Password length minimum 8 ,must have 1 number, 1 capital and 1 symbol",
         })
       }
 
