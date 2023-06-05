@@ -1,7 +1,7 @@
 const { validToken } = require("../lib/jwt")
 const { PrismaClient } = require("@prisma/client")
 const { roleEnum } = require("../configs/constant.js")
-const { upload } = require("../lib/uploader")
+const { upload, dynamicDestination } = require("../lib/uploader")
 const multer = require("multer")
 
 const prisma = new PrismaClient()
@@ -88,6 +88,8 @@ const validateProfileUpload = (req, res, next) => {
     acceptedFileTypes: ["png", "jpg", "jpeg"],
     filePrefix: "profile_pic_url",
     maxSize: 2 * 1024 * 1024, //2MB
+    dynamicDestination: "public/user",
+    // dynamicDestination:dynamicDestination
   }).single("profilePicUrl")(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_SIZE") {

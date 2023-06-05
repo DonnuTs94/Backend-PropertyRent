@@ -406,7 +406,7 @@ const authController = {
     }
   },
   uploadProfileUser: async (req, res) => {
-    const path = "public/"
+    const path = "public/user/"
     try {
       const foundUserProfile = await prisma.user.findFirst({
         where: {
@@ -440,7 +440,7 @@ const authController = {
     }
   },
   uploadProfileTenant: async (req, res) => {
-    const path = "public/"
+    const path = "public/tenant/"
     try {
       const foundTenantProfile = await prisma.user.findFirst({
         where: {
