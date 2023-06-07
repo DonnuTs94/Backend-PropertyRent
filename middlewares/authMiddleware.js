@@ -8,7 +8,7 @@ const {
   LIMIT_FILE_SIZE,
   PROFILE_FIELDNAME,
   PROFILE_FILEPREFIX,
-  PROFILE_FILE_TYPES,
+  FILE_TYPES,
 } = require("../configs/constant/upload")
 
 const prisma = new PrismaClient()
@@ -97,7 +97,7 @@ const validateProfileUpload = (path) => {
     }
 
     upload({
-      acceptedFileTypes: PROFILE_FILE_TYPES,
+      acceptedFileTypes: FILE_TYPES,
       filePrefix: PROFILE_FILEPREFIX,
       maxSize: 2 * 1024 * 1024, //2MB
       dynamicDestination: path,

@@ -41,7 +41,7 @@ model Properties {
   province       Provincies       @relation(fields: [provinceId], references: [id])
   provinceId     Int
   propertyImages PropertyImages[]
-  City           Cities?          @relation(fields: [cityId], references: [id])
+  city           Cities?          @relation(fields: [cityId], references: [id])
   cityId         Int?
 }
 
