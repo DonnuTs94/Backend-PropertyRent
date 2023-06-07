@@ -18,10 +18,24 @@ route.post(
 )
 
 route.patch(
-  "/",
+  "/:id",
   verifyToken,
   verifyRoleTenant,
   propertyController.updateProperty
+)
+
+route.patch(
+  "/delete/:id",
+  verifyToken,
+  verifyRoleTenant,
+  propertyController.softDeleteProperty
+)
+
+route.delete(
+  "/delete/:id",
+  verifyToken,
+  verifyRoleTenant,
+  propertyController.deleteProperty
 )
 
 module.exports = route

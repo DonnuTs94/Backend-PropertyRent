@@ -48,7 +48,7 @@ model Properties {
 model PropertyImages {
   id             Int         @id @default(autoincrement())
   propertyPicUrl String
-  Property       Properties? @relation(fields: [propertyId], references: [id])
+  property       Properties? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId     Int?
 }
 

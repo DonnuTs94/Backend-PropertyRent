@@ -43,8 +43,6 @@ const validatePropertyUpload = (path) => {
         })
       }
 
-      console.log(req.files)
-
       const maxFileCount = 3
       if (req.files.length > maxFileCount) {
         req.files.map((file) => {
