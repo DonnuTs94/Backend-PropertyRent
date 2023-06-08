@@ -41,8 +41,15 @@ route.delete(
 route.get(
   "/",
   verifyToken,
-  verifyRoleTenant,
+  verifyRoleTenant
   propertyController.fetchAllTenantPropertyAllTenantProperty
+)
+
+route.get(
+  "/:id",
+  verifyToken,
+  verifyRoleTenant,
+  propertyController.fetchSpecificProperty
 )
 
 module.exports = route

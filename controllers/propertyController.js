@@ -184,13 +184,42 @@ const propertyController = {
   },
   fetchAllTenantProperty: async (req, res) => {
     try {
-      const allPropertyData = await prisma.properties.findMany()
+      const allTenantPropertyData = await prisma.properties.findMany()
 
       return res.status(200).json({
-        message: "success fetch all property",
-        data: allPropertyData,
+        message: "Success fetch all property",
+        data: allTenantPropertyData,
       })
     } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  fetchSpecificProperty: async (req, res) => {
+    try {
+      const fetchPropertyTenantById = await prisma.properties.findFirst({
+        where: {
+          id: parseInt(req.params.id),
+          AND: {
+            deleted: false,
+          },
+        },
+        include: { province: true, city: true, propertyImages: true },
+      })
+
+      if (!fetchPropertyTenantById) {
+        return res.status(400).json({
+          message: "Property doesn't exist",
+        })
+      }
+
+      return res.status(200).json({
+        message: "Success fetch property",
+        data: fetchPropertyTenantById,
+      })
+    } catch (err) {
+      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
