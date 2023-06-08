@@ -42,7 +42,7 @@ route.get(
   "/",
   verifyToken,
   verifyRoleTenant,
-  propertyController.fetchAllTenantPropertyAllTenantProperty
+  propertyController.fetchAllTenantProperty
 )
 
 module.exports = route

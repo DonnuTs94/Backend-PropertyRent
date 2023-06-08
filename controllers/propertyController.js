@@ -184,7 +184,17 @@ const propertyController = {
   },
   fetchAllTenantProperty: async (req, res) => {
     try {
-      const allPropertyData = await prisma.properties.findMany()
+      const allPropertyData = await prisma.properties.findMany({
+        where: {
+          deleted: false,
+        },
+        include: {
+          province: true,
+          city: true,
+          category: true,
+          propertyImages: true,
+        },
+      })
 
       return res.status(200).json({
         message: "success fetch all property",
