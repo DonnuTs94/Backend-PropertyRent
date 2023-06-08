@@ -38,4 +38,11 @@ route.delete(
   propertyController.deleteProperty
 )
 
+route.get(
+  "/",
+  verifyToken,
+  verifyRoleTenant,
+  propertyController.fetchAllTenantPropertyAllTenantProperty
+)
+
 module.exports = route

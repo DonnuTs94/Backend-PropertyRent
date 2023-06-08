@@ -182,6 +182,20 @@ const propertyController = {
       })
     }
   },
+  fetchAllTenantProperty: async (req, res) => {
+    try {
+      const allPropertyData = await prisma.properties.findMany()
+
+      return res.status(200).json({
+        message: "success fetch all property",
+        data: allPropertyData,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = propertyController
