@@ -6,7 +6,9 @@ const {
 } = require("../configs/constant/upload")
 const { upload } = require("../lib/uploader")
 const multer = require("multer")
+const { PrismaClient } = require("@prisma/client")
 
+const prisma = new PrismaClient()
 const fs = require("fs")
 
 const validatePropertyUpload = (path) => {
@@ -59,6 +61,34 @@ const validatePropertyUpload = (path) => {
   }
 }
 
+const verifyTenantOwnership = async (req, res, next) => {
+  try {
+    const foundTenantOwnership = await prisma.properties.findFirst({
+      where: {
+        id: parseInt(req.params.id),
+      },
+    })
+
+    if (!foundTenantOwnership) {
+      return res.status(400).json({
+        message: "Property doesn't exist",
+      })
+    }
+
+    if (foundTenantOwnership.userId !== req.user.id) {
+      return res.status(400).json({
+        message: "Restricted",
+      })
+    }
+    next()
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message,
+    })
+  }
+}
+
 module.exports = {
   validatePropertyUpload,
+  verifyTenantOwnership,
 }

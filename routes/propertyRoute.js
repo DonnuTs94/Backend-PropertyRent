@@ -4,7 +4,10 @@ const {
   verifyToken,
   verifyRoleTenant,
 } = require("../middlewares/authMiddleware")
-const { validatePropertyUpload } = require("../middlewares/propertyMiddleware")
+const {
+  validatePropertyUpload,
+  verifyTenantOwnership,
+} = require("../middlewares/propertyMiddleware")
 const { TENANT_PROPERTY_PATH } = require("../configs/constant/uploadFilePath")
 
 const route = express.Router()
@@ -21,6 +24,7 @@ route.patch(
   "/:id",
   verifyToken,
   verifyRoleTenant,
+  verifyTenantOwnership,
   propertyController.updateProperty
 )
 
@@ -28,6 +32,7 @@ route.patch(
   "/delete/:id",
   verifyToken,
   verifyRoleTenant,
+  verifyTenantOwnership,
   propertyController.softDeleteProperty
 )
 
@@ -35,6 +40,7 @@ route.delete(
   "/delete/:id",
   verifyToken,
   verifyRoleTenant,
+  verifyTenantOwnership,
   propertyController.deleteProperty
 )
 
@@ -43,6 +49,14 @@ route.get(
   verifyToken,
   verifyRoleTenant,
   propertyController.fetchAllTenantProperty
+)
+
+route.get(
+  "/:id",
+  verifyToken,
+  verifyRoleTenant,
+  verifyTenantOwnership,
+  propertyController.fetchSpecificProperty
 )
 
 module.exports = route
