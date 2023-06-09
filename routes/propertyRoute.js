@@ -9,6 +9,7 @@ const {
   verifyTenantOwnership,
   validatePostImagePropertyUpload,
   validateMaxLengthImages,
+  verifyImageOwenership,
 } = require("../middlewares/propertyMiddleware")
 const { TENANT_PROPERTY_PATH } = require("../configs/constant/uploadFilePath")
 
@@ -69,6 +70,14 @@ route.post(
   validateMaxLengthImages,
   validatePostImagePropertyUpload(TENANT_PROPERTY_PATH),
   propertyController.postPropertyImagePath
+)
+
+route.delete(
+  "/image/:id",
+  verifyToken,
+  verifyRoleTenant,
+  verifyImageOwenership,
+  propertyController.deletePropertyImagePath
 )
 
 module.exports = route

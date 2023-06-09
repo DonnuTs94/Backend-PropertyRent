@@ -88,6 +88,40 @@ const verifyTenantOwnership = async (req, res, next) => {
   }
 }
 
+const verifyImageOwenership = async (req, res, next) => {
+  try {
+    const foundPropertyImage = await prisma.propertyImages.findFirst({
+      where: {
+        id: parseInt(req.params.id),
+      },
+    })
+
+    if (!foundPropertyImage) {
+      return res.status(400).json({
+        message: "Image doesn't exist",
+      })
+    }
+
+    const findPropertyId = await prisma.properties.findUnique({
+      where: {
+        id: foundPropertyImage.propertyId,
+      },
+    })
+
+    if (findPropertyId.userId !== req.user.id) {
+      return res.status(400).json({
+        message: "Restircted",
+      })
+    }
+
+    next()
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message,
+    })
+  }
+}
+
 const validatePostImagePropertyUpload = (path) => {
   return async (req, res, next) => {
     if (!fs.existsSync(path)) {
@@ -155,4 +189,5 @@ module.exports = {
   verifyTenantOwnership,
   validatePostImagePropertyUpload,
   validateMaxLengthImages,
+  verifyImageOwenership,
 }
