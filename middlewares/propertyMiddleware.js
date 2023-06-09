@@ -11,7 +11,7 @@ const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
 const fs = require("fs")
 
-const validatePropertyUpload = (path) => {
+const validateCreatePropertyImageUpload = (path) => {
   return async (req, res, next) => {
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path, { recursive: true })
@@ -88,7 +88,71 @@ const verifyTenantOwnership = async (req, res, next) => {
   }
 }
 
+const validatePostImagePropertyUpload = (path) => {
+  return async (req, res, next) => {
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path, { recursive: true })
+    }
+
+    upload({
+      acceptedFileTypes: FILE_TYPES,
+      filePrefix: PROPERTY_FILEPREFIX,
+      maxSize: 2 * 1024 * 1024, //2MB
+      dynamicDestination: path,
+    }).single(PROPERTY_FIELDNAME)(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === LIMIT_FILE_SIZE) {
+          return res.status(400).json({
+            message: "File too large",
+          })
+        } else {
+          return res.status(400).json({
+            message: "File upload error: " + err.message,
+          })
+        }
+      } else if (err) {
+        return res.status(400).json({
+          message: "File upload error: " + err.message,
+        })
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          message: "No file selected",
+        })
+      }
+
+      next()
+    })
+  }
+}
+
+const validateMaxLengthImages = async (req, res, next) => {
+  try {
+    const propertyImagesLength = await prisma.propertyImages.findMany({
+      where: {
+        propertyId: parseInt(req.params.id),
+      },
+    })
+
+    const maxImagesLength = 6
+    if (propertyImagesLength.length < maxImagesLength) {
+      next()
+    } else {
+      return res.status(400).json({
+        message: "You have maximum images file",
+      })
+    }
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message,
+    })
+  }
+}
+
 module.exports = {
-  validatePropertyUpload,
+  validateCreatePropertyImageUpload,
   verifyTenantOwnership,
+  validatePostImagePropertyUpload,
+  validateMaxLengthImages,
 }

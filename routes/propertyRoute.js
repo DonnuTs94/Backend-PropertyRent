@@ -5,8 +5,10 @@ const {
   verifyRoleTenant,
 } = require("../middlewares/authMiddleware")
 const {
-  validatePropertyUpload,
+  validateCreatePropertyImageUpload,
   verifyTenantOwnership,
+  validatePostImagePropertyUpload,
+  validateMaxLengthImages,
 } = require("../middlewares/propertyMiddleware")
 const { TENANT_PROPERTY_PATH } = require("../configs/constant/uploadFilePath")
 
@@ -16,7 +18,7 @@ route.post(
   "/",
   verifyToken,
   verifyRoleTenant,
-  validatePropertyUpload(TENANT_PROPERTY_PATH),
+  validateCreatePropertyImageUpload(TENANT_PROPERTY_PATH),
   propertyController.createProperty
 )
 
@@ -57,6 +59,16 @@ route.get(
   verifyRoleTenant,
   verifyTenantOwnership,
   propertyController.fetchSpecificProperty
+)
+
+route.post(
+  "/image/:id",
+  verifyToken,
+  verifyRoleTenant,
+  verifyTenantOwnership,
+  validateMaxLengthImages,
+  validatePostImagePropertyUpload(TENANT_PROPERTY_PATH),
+  propertyController.postPropertyImagePath
 )
 
 module.exports = route

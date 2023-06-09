@@ -229,6 +229,26 @@ const propertyController = {
       })
     }
   },
+  postPropertyImagePath: async (req, res) => {
+    try {
+      const propertyImagePath = await prisma.propertyImages.create({
+        data: {
+          propertyPicUrl: req.file.filename,
+          propertyId: parseInt(req.params.id),
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success upload image property",
+        data: propertyImagePath,
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = propertyController
