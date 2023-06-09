@@ -31,6 +31,7 @@ model Properties {
   description    String           @db.Text
   rules          String           @db.Text
   facilities     String           @db.Text
+  address        String
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   deleted        Boolean          @default(false)
@@ -41,15 +42,52 @@ model Properties {
   province       Provincies       @relation(fields: [provinceId], references: [id])
   provinceId     Int
   propertyImages PropertyImages[]
-  city           Cities?          @relation(fields: [cityId], references: [id])
-  cityId         Int?
+  city           Cities           @relation(fields: [cityId], references: [id])
+  cityId         Int
+  rooms          Rooms[]
 }
 
 model PropertyImages {
-  id             Int         @id @default(autoincrement())
+  id             Int        @id @default(autoincrement())
   propertyPicUrl String
-  property       Properties? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  propertyId     Int?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  property       Properties @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId     Int
+}
+
+model Rooms {
+  id          Int          @id @default(autoincrement())
+  name        String
+  facilities  String       @db.Text
+  description String       @db.Text
+  capacity    Int
+  bedType     String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  property    Properties   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId  Int
+  roomImages  RoomImages[]
+  roomPrice   RoomPrice[]
+}
+
+model RoomImages {
+  id         Int      @id @default(autoincrement())
+  roomPicUrl String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  room       Rooms    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId     Int
+}
+
+model RoomPrice {
+  id        Int      @id @default(autoincrement())
+  price     Int
+  date      DateTime @db.Date()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  room      Rooms    @relation(fields: [roomId], references: [id])
+  roomId    Int
 }
 
 model Categories {
