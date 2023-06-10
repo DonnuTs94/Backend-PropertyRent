@@ -86,7 +86,7 @@ model RoomPrice {
   date      DateTime @db.Date()
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  room      Rooms    @relation(fields: [roomId], references: [id])
+  room      Rooms    @relation(fields: [roomId], references: [id], onDelete: Cascade)
   roomId    Int
 }
 
