@@ -57,18 +57,17 @@ model PropertyImages {
 }
 
 model Rooms {
-  id          Int          @id @default(autoincrement())
-  name        String
-  facilities  String       @db.Text
-  description String       @db.Text
-  capacity    Int
-  bedType     String
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  property    Properties   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  propertyId  Int
-  roomImages  RoomImages[]
-  roomPrice   RoomPrice[]
+  id         Int          @id @default(autoincrement())
+  name       String
+  facilities String       @db.Text
+  capacity   Int
+  bedType    String //enum
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  property   Properties   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId Int
+  roomImages RoomImages[]
+  roomPrice  RoomPrice[]
 }
 
 model RoomImages {

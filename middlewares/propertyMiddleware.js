@@ -102,6 +102,8 @@ const verifyImageOwenership = async (req, res, next) => {
       })
     }
 
+    // buat tanpa harus masuk database lagi
+
     const findPropertyId = await prisma.properties.findUnique({
       where: {
         id: foundPropertyImage.propertyId,
