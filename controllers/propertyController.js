@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 const propertyController = {
   createProperty: async (req, res) => {
-    const { name, description, rules, facilities } = req.body
+    const { name, description, rules, facilities, address } = req.body
     const categoryId = parseInt(req.body.categoryId)
     const provinceId = parseInt(req.body.provinceId)
     const cityId = parseInt(req.body.cityId)
@@ -26,6 +26,7 @@ const propertyController = {
         !description ||
         !rules ||
         !facilities ||
+        !address ||
         !categoryId ||
         !provinceId ||
         !cityId
@@ -80,6 +81,7 @@ const propertyController = {
           description,
           rules,
           facilities,
+          address,
           categoryId: foundCategoryById.id,
           provinceId: foundProvinceById.id,
           cityId: foundCityById.id,
@@ -111,6 +113,7 @@ const propertyController = {
         data: propertyDataResult,
       })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         message: err.message,
       })

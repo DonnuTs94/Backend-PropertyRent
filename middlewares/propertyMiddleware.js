@@ -45,7 +45,7 @@ const validateCreatePropertyImageUpload = (path) => {
         })
       }
 
-      const maxFileCount = 3
+      const maxFileCount = 6
       if (req.files.length > maxFileCount) {
         req.files.map((file) => {
           fs.unlinkSync(file.path)
