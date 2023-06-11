@@ -6,6 +6,8 @@ const PROPERTY_FIELDNAME = "propertyPicUrl"
 
 const LIMIT_FILE_SIZE = "LIMIT_FILE_SIZE"
 
+const SIZE_2MB = 2 * 1024 * 1024
+
 module.exports = {
   PROFILE_FIELDNAME,
   PROFILE_FILEPREFIX,
@@ -13,4 +15,5 @@ module.exports = {
   LIMIT_FILE_SIZE,
   PROPERTY_FILEPREFIX,
   PROPERTY_FIELDNAME,
+  SIZE_2MB,
 }

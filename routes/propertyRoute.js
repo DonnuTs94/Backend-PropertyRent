@@ -5,9 +5,7 @@ const {
   verifyRoleTenant,
 } = require("../middlewares/authMiddleware")
 const {
-  validateCreatePropertyImageUpload,
   verifyTenantOwnership,
-  validatePostImagePropertyUpload,
   validateMaxLengthImages,
   verifyImageOwenership,
 } = require("../middlewares/propertyMiddleware")
@@ -19,6 +17,7 @@ const {
   FILE_TYPES,
   PROPERTY_FIELDNAME,
   PROPERTY_FILEPREFIX,
+  SIZE_2MB,
 } = require("../configs/constant/upload")
 
 const route = express.Router()
@@ -33,7 +32,7 @@ route.post(
     _fileTypes: FILE_TYPES,
     _filePrefix: PROPERTY_FILEPREFIX,
     filePath: PROPERTY_FIELDNAME,
-    imgSize: 2 * 1024 * 1024,
+    imgSize: SIZE_2MB,
   }),
   propertyController.createProperty
 )
@@ -88,7 +87,7 @@ route.post(
     _fileTypes: FILE_TYPES,
     _filePrefix: PROPERTY_FILEPREFIX,
     filePath: PROPERTY_FIELDNAME,
-    imgSize: 2 * 1024 * 1024,
+    imgSize: SIZE_2MB,
     allowMultiple: false,
   }),
   propertyController.postPropertyImagePath
