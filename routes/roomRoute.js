@@ -8,7 +8,10 @@ const { verifyTenantOwnership } = require("../middlewares/propertyMiddleware")
 const {
   validateFileUpload,
 } = require("../middlewares/imagesValidatorMiddleware")
-const { validateRoomOwnership } = require("../middlewares/roomMiddleware")
+const {
+  validateRoomOwnership,
+  validateMaxLengthRoomImages,
+} = require("../middlewares/roomMiddleware")
 const {
   ROOM_FIELDNAME,
   ROOM_FILEPREFIX,
@@ -55,5 +58,22 @@ router.post(
   verifyRoleTenant,
   validateRoomOwnership,
   roomController.createRoomPrice
+)
+
+router.post(
+  "/image/:id",
+  verifyToken,
+  verifyRoleTenant,
+  validateRoomOwnership,
+  validateMaxLengthRoomImages,
+  validateFileUpload({
+    _filePrefix: ROOM_FILEPREFIX,
+    _fileTypes: FILE_TYPES,
+    path: TENANT_ROOM_PATH,
+    dbFileName: ROOM_FIELDNAME,
+    imgSize: SIZE_2MB,
+    allowMultiple: false,
+  }),
+  roomController.postRoomImagePath
 )
 module.exports = router

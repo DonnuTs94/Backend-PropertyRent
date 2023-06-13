@@ -154,6 +154,25 @@ const roomController = {
       })
     }
   },
+  postRoomImagePath: async (req, res) => {
+    try {
+      const postRoomImg = await prisma.roomImages.create({
+        data: {
+          roomPicUrl: req.file.filename,
+          roomId: req.params.id,
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success upload image room",
+        data: postRoomImg,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = roomController

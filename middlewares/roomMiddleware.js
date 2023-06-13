@@ -33,4 +33,27 @@ const validateRoomOwnership = async (req, res, next) => {
   }
 }
 
-module.exports = { validateRoomOwnership }
+const validateMaxLengthRoomImages = async (req, res, next) => {
+  try {
+    const roomImagesLength = await prisma.roomImages.findMany({
+      where: {
+        roomId: req.params.id,
+      },
+    })
+
+    const maxImagesLength = 6
+    if (roomImagesLength.length < maxImagesLength) {
+      next()
+    } else {
+      return res.status(400).json({
+        message: "You have maximum images files",
+      })
+    }
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message,
+    })
+  }
+}
+
+module.exports = { validateRoomOwnership, validateMaxLengthRoomImages }
