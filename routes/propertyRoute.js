@@ -26,13 +26,13 @@ route.post(
   "/",
   verifyToken,
   verifyRoleTenant,
-  // validateCreatePropertyImageUpload((path = TENANT_PROPERTY_PATH)),
   validateFileUpload({
     path: TENANT_PROPERTY_PATH,
     _fileTypes: FILE_TYPES,
     _filePrefix: PROPERTY_FILEPREFIX,
-    filePath: PROPERTY_FIELDNAME,
+    dbFileName: PROPERTY_FIELDNAME,
     imgSize: SIZE_2MB,
+    allowMultiple: true,
   }),
   propertyController.createProperty
 )
@@ -86,7 +86,7 @@ route.post(
     path: TENANT_PROPERTY_PATH,
     _fileTypes: FILE_TYPES,
     _filePrefix: PROPERTY_FILEPREFIX,
-    filePath: PROPERTY_FIELDNAME,
+    dbFileName: PROPERTY_FIELDNAME,
     imgSize: SIZE_2MB,
     allowMultiple: false,
   }),

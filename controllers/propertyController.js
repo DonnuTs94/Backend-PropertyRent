@@ -7,9 +7,9 @@ const prisma = new PrismaClient()
 const propertyController = {
   createProperty: async (req, res) => {
     const { name, description, rules, facilities, address } = req.body
-    const categoryId = parseInt(req.body.categoryId)
-    const provinceId = parseInt(req.body.provinceId)
-    const cityId = parseInt(req.body.cityId)
+    const categoryId = req.body.categoryId
+    const provinceId = req.body.provinceId
+    const cityId = req.body.cityId
 
     const files = req.files
     let imagesPath = []
@@ -107,13 +107,13 @@ const propertyController = {
         },
         include: { propertyImages: true, user: true },
       })
+      delete propertyDataResult.user.password
 
       return res.status(200).json({
         message: "Successfull create property",
         data: propertyDataResult,
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
@@ -123,7 +123,7 @@ const propertyController = {
     try {
       const updateProperty = await prisma.properties.update({
         where: {
-          id: parseInt(req.params.id),
+          id: req.params.id,
         },
         data: {
           ...req.body,
@@ -144,7 +144,7 @@ const propertyController = {
     try {
       await prisma.properties.update({
         where: {
-          id: parseInt(req.params.id),
+          id: req.params.id,
         },
         data: {
           deleted: true,
@@ -163,13 +163,13 @@ const propertyController = {
     try {
       const propertyImages = await prisma.propertyImages.findMany({
         where: {
-          propertyId: parseInt(req.params.id),
+          propertyId: req.params.id,
         },
       })
 
       await prisma.properties.delete({
         where: {
-          id: parseInt(req.params.id),
+          id: req.params.id,
         },
       })
       propertyImages.map((item) => {
@@ -214,7 +214,7 @@ const propertyController = {
     try {
       const fetchPropertyTenantById = await prisma.properties.findFirst({
         where: {
-          id: parseInt(req.params.id),
+          id: req.params.id,
           AND: {
             deleted: false,
           },
@@ -237,7 +237,7 @@ const propertyController = {
       const propertyImagePath = await prisma.propertyImages.create({
         data: {
           propertyPicUrl: req.file.filename,
-          propertyId: parseInt(req.params.id),
+          propertyId: req.params.id,
         },
       })
 
@@ -255,7 +255,7 @@ const propertyController = {
     try {
       const foundImagePath = await prisma.propertyImages.delete({
         where: {
-          id: parseInt(req.params.id),
+          id: req.params.id,
         },
       })
 

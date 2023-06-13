@@ -6,11 +6,11 @@ const fs = require("fs")
 
 const validateFileUpload = ({
   path,
-  filePath,
+  dbFileName,
   _fileTypes,
   _filePrefix,
   imgSize,
-  allowMultiple = true,
+  allowMultiple = false,
 }) => {
   return async (req, res, next) => {
     if (!fs.existsSync(path)) {
@@ -71,11 +71,11 @@ const validateFileUpload = ({
     })
 
     if (allowMultiple) {
-      uploadMiddleware.array(filePath)(req, res, function (err) {
+      uploadMiddleware.array(dbFileName)(req, res, function (err) {
         handleMulterError(err)
       })
     } else {
-      uploadMiddleware.single(filePath)(req, res, function (err) {
+      uploadMiddleware.single(dbFileName)(req, res, function (err) {
         handleMulterError(err)
       })
     }

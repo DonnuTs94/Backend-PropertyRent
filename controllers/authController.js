@@ -16,6 +16,7 @@ const {
   EMAIL_VALIDATOR,
   PASSWORD_VALIDATOR,
 } = require("../configs/constant/regexValidator")
+const { ENOENT_CODE } = require("../configs/constant/errorCode")
 
 const prisma = new PrismaClient()
 
@@ -446,6 +447,10 @@ const authController = {
         data: uploadProfileUrl,
       })
     } catch (err) {
+      if (err.code === ENOENT_CODE) {
+        fs.unlinkSync(req.file.path)
+      }
+
       return res.status(500).json({
         message: err.message,
       })
@@ -479,6 +484,9 @@ const authController = {
         data: uploadProfileUrl,
       })
     } catch (err) {
+      if (err.code === ENOENT_CODE) {
+        fs.unlinkSync(req.file.path)
+      }
       return res.status(500).json({
         message: err.message,
       })
