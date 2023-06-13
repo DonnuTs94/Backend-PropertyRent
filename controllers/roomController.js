@@ -194,6 +194,31 @@ const roomController = {
       })
     }
   },
+  updateRoom: async (req, res) => {
+    try {
+      const updateRoom = await prisma.rooms.update({
+        where: {
+          id: req.params.id,
+        },
+        data: {
+          ...req.body,
+        },
+      })
+
+      if (req.body.capacity) {
+        parseInt(req.body.capacity)
+      }
+
+      return res.status(200).json({
+        message: "Success update room",
+        data: updateRoom,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = roomController

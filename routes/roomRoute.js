@@ -85,4 +85,12 @@ router.delete(
   verifyRoomImageOwenership,
   roomController.deleteRoomImage
 )
+
+router.patch(
+  "/:id",
+  verifyToken,
+  verifyRoleTenant,
+  verifyRoomOwnership,
+  roomController.updateRoom
+)
 module.exports = router
