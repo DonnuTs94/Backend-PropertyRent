@@ -62,6 +62,7 @@ model Rooms {
   facilities String       @db.Text
   capacity   Int
   bedType    BedType //enum
+  deleted    Boolean      @default(false)
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   property   Properties   @relation(fields: [propertyId], references: [id], onDelete: Cascade)

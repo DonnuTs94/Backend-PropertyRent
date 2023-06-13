@@ -32,4 +32,16 @@ router.post(
   roomController.createRoom
 )
 
+router.get(
+  "/all-room/:id",
+  verifyToken,
+  verifyRoleTenant,
+  roomController.fetchAllRoom
+)
+router.get(
+  "/:id",
+  verifyToken,
+  verifyRoleTenant,
+  roomController.fetchSpecificRoom
+)
 module.exports = router

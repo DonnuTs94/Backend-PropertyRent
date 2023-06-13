@@ -21,6 +21,7 @@ const roomController = {
           message: "Restricted",
         })
       }
+
       if (!name || !facilities || !capacity || !bedType) {
         return res.status(400).json({
           message: "Input must be filled",
@@ -62,6 +63,55 @@ const roomController = {
       })
     } catch (err) {
       console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  fetchAllRoom: async (req, res) => {
+    try {
+      const foundPropertyById = await prisma.properties.findFirst({
+        where: {
+          id: req.params.id,
+        },
+      })
+
+      const fetchAllRoom = await prisma.rooms.findMany({
+        where: {
+          deleted: false,
+          propertyId: foundPropertyById.id,
+        },
+        include: { roomImages: true, roomPrice: true },
+      })
+
+      return res.status(200).json({
+        message: "Successfully fetch all room",
+        data: fetchAllRoom,
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  fetchSpecificRoom: async (req, res) => {
+    try {
+      const fetchRoomById = await prisma.rooms.findFirst({
+        where: {
+          id: req.params.id,
+          AND: {
+            deleted: false,
+          },
+        },
+        include: { roomImages: true, roomPrice: true },
+      })
+
+      return res.status(200).json({
+        message: "Successfully fetch room by Id",
+        data: fetchRoomById,
+      })
+    } catch (err) {
       return res.status(500).json({
         message: err.message,
       })
