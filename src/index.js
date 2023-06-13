@@ -3,6 +3,7 @@ const cors = require("cors")
 const authRoute = require("../routes/authRoute")
 const categoryRoute = require("../routes/categoryRoute")
 const propertyRoute = require("../routes/propertyRoute")
+const roomRoute = require("../routes/roomRoute")
 
 const PORT = process.env.PORT || 8000
 
@@ -15,6 +16,7 @@ app.use("/public", express.static("public"))
 app.use("/auth", authRoute)
 app.use("/category", categoryRoute)
 app.use("/property", propertyRoute)
+app.use("/room", roomRoute)
 
 app.listen(PORT, (err) => {
   console.log(`SERVER RUNING on Port ${PORT}`)

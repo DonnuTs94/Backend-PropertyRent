@@ -35,7 +35,7 @@ const propertyController = {
           fs.unlinkSync(file.path)
         })
         return res.status(400).json({
-          message: "input must be filled!",
+          message: "Input must be filled!",
         })
       }
 
