@@ -76,12 +76,6 @@ const roomController = {
         },
       })
 
-      // if (!foundPropertyById) {
-      //   return res.status(400).json({
-      //     message: "Property doesn't exist",
-      //   })
-      // }
-
       const fetchAllRoom = await prisma.rooms.findMany({
         where: {
           deleted: false,
