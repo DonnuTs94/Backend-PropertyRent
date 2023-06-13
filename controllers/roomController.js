@@ -219,6 +219,52 @@ const roomController = {
       })
     }
   },
+  softDeleteRoom: async (req, res) => {
+    try {
+      await prisma.rooms.update({
+        where: {
+          id: req.params.id,
+        },
+        data: {
+          deleted: true,
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success delete room",
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  deleteRoom: async (req, res) => {
+    try {
+      const roomImages = await prisma.roomImages.findMany({
+        where: {
+          roomId: req.params.id,
+        },
+      })
+
+      await prisma.rooms.delete({
+        where: {
+          id: req.params.id,
+        },
+      })
+      roomImages.map((item) => {
+        fs.unlinkSync(ROOM_IMAGES_PATH + item.roomPicUrl)
+      })
+
+      return res.status(200).json({
+        message: "Success delete room",
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = roomController

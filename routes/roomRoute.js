@@ -27,6 +27,7 @@ router.post(
   "/:id",
   verifyToken,
   verifyRoleTenant,
+  verifyTenantOwnership,
   validateFileUpload({
     _filePrefix: ROOM_FILEPREFIX,
     _fileTypes: FILE_TYPES,
@@ -92,5 +93,21 @@ router.patch(
   verifyRoleTenant,
   verifyRoomOwnership,
   roomController.updateRoom
+)
+
+router.patch(
+  "/delete/:id",
+  verifyToken,
+  verifyRoleTenant,
+  verifyRoomOwnership,
+  roomController.softDeleteRoom
+)
+
+router.delete(
+  "/delete/:id",
+  verifyToken,
+  verifyRoleTenant,
+  verifyRoomOwnership,
+  roomController.deleteRoom
 )
 module.exports = router
