@@ -62,7 +62,6 @@ const roomController = {
         data: roomDataResult,
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
@@ -73,8 +72,15 @@ const roomController = {
       const foundPropertyById = await prisma.properties.findFirst({
         where: {
           id: req.params.id,
+          userId: req.user.id,
         },
       })
+
+      // if (!foundPropertyById) {
+      //   return res.status(400).json({
+      //     message: "Property doesn't exist",
+      //   })
+      // }
 
       const fetchAllRoom = await prisma.rooms.findMany({
         where: {
@@ -89,7 +95,6 @@ const roomController = {
         data: fetchAllRoom,
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })

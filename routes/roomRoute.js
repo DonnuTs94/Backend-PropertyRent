@@ -4,9 +4,11 @@ const {
   verifyToken,
   verifyRoleTenant,
 } = require("../middlewares/authMiddleware")
+const { verifyTenantOwnership } = require("../middlewares/propertyMiddleware")
 const {
   validateFileUpload,
 } = require("../middlewares/imagesValidatorMiddleware")
+const { validateRoomOwnership } = require("../middlewares/roomMiddleware")
 const {
   ROOM_FIELDNAME,
   ROOM_FILEPREFIX,
@@ -36,12 +38,14 @@ router.get(
   "/all-room/:id",
   verifyToken,
   verifyRoleTenant,
+  verifyTenantOwnership,
   roomController.fetchAllRoom
 )
 router.get(
   "/:id",
   verifyToken,
   verifyRoleTenant,
+  validateRoomOwnership,
   roomController.fetchSpecificRoom
 )
 module.exports = router
