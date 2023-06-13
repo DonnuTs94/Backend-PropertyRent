@@ -1,4 +1,6 @@
 const { PrismaClient } = require("@prisma/client")
+const fs = require("fs")
+const { ROOM_IMAGES_PATH } = require("../configs/constant/unlinkFilePath")
 
 const prisma = new PrismaClient()
 
@@ -166,6 +168,25 @@ const roomController = {
       return res.status(200).json({
         message: "Success upload image room",
         data: postRoomImg,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  deleteRoomImage: async (req, res) => {
+    try {
+      const foundImagePath = await prisma.roomImages.delete({
+        where: {
+          id: req.params.id,
+        },
+      })
+
+      fs.unlinkSync(ROOM_IMAGES_PATH + foundImagePath.roomPicUrl)
+
+      return res.status(200).json({
+        message: "Success delete image",
       })
     } catch (err) {
       return res.status(500).json({

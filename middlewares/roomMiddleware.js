@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client")
 
 const prisma = new PrismaClient()
 
-const validateRoomOwnership = async (req, res, next) => {
+const verifyRoomOwnership = async (req, res, next) => {
   try {
     const foundRoomOwnership = await prisma.rooms.findFirst({
       where: {
@@ -56,4 +56,42 @@ const validateMaxLengthRoomImages = async (req, res, next) => {
   }
 }
 
-module.exports = { validateRoomOwnership, validateMaxLengthRoomImages }
+const verifyRoomImageOwenership = async (req, res, next) => {
+  try {
+    const foundRoomImage = await prisma.roomImages.findFirst({
+      where: {
+        id: req.params.id,
+      },
+      include: {
+        room: {
+          include: {
+            property: true,
+          },
+        },
+      },
+    })
+
+    if (!foundRoomImage) {
+      return res.status(400).json({
+        message: "Image doesn't exist",
+      })
+    }
+
+    if (foundRoomImage.room.property.userId !== req.user.id) {
+      return res.status(400).json({
+        message: "Restircted",
+      })
+    }
+
+    next()
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message,
+    })
+  }
+}
+module.exports = {
+  verifyRoomOwnership,
+  validateMaxLengthRoomImages,
+  verifyRoomImageOwenership,
+}
