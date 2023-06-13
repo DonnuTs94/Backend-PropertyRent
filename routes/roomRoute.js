@@ -48,4 +48,12 @@ router.get(
   validateRoomOwnership,
   roomController.fetchSpecificRoom
 )
+
+router.post(
+  "/price/:id",
+  verifyToken,
+  verifyRoleTenant,
+  validateRoomOwnership,
+  roomController.createRoomPrice
+)
 module.exports = router

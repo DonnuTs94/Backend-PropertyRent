@@ -116,6 +116,44 @@ const roomController = {
       })
     }
   },
+  createRoomPrice: async (req, res) => {
+    let inputDataPrice = []
+    try {
+      const foundRoomById = await prisma.rooms.findFirst({
+        where: {
+          id: req.params.id,
+        },
+      })
+
+      inputDataPrice = req.body
+      const dataRoomPrice = inputDataPrice.map((item) => {
+        return {
+          price: parseInt(item.price),
+          date: new Date(item.date),
+          roomId: foundRoomById.id,
+        }
+      })
+
+      await prisma.roomPrice.createMany({
+        data: dataRoomPrice,
+      })
+
+      const dataResult = await prisma.rooms.findUnique({
+        where: {
+          id: foundRoomById.id,
+        },
+        include: { roomPrice: true },
+      })
+      return res.status(200).json({
+        message: "Successfull add new price and date",
+        data: dataResult,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = roomController
