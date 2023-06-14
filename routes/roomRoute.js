@@ -119,4 +119,12 @@ router.patch(
   verifyRoomPriceOwenership,
   roomController.updatePrice
 )
+
+router.delete(
+  "/price/:id",
+  verifyToken,
+  verifyRoleTenant,
+  verifyRoomPriceOwenership,
+  roomController.deletePrice
+)
 module.exports = router

@@ -291,6 +291,23 @@ const roomController = {
       })
     }
   },
+  deletePrice: async (req, res) => {
+    try {
+      await prisma.roomPrice.delete({
+        where: {
+          id: req.params.id,
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success delete price",
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = roomController
