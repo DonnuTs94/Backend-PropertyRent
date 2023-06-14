@@ -12,6 +12,7 @@ const {
   verifyRoomOwnership,
   validateMaxLengthRoomImages,
   verifyRoomImageOwenership,
+  verifyRoomPriceOwenership,
 } = require("../middlewares/roomMiddleware")
 const {
   ROOM_FIELDNAME,
@@ -52,14 +53,6 @@ router.get(
   verifyRoleTenant,
   verifyRoomOwnership,
   roomController.fetchSpecificRoom
-)
-
-router.post(
-  "/price/:id",
-  verifyToken,
-  verifyRoleTenant,
-  verifyRoomOwnership,
-  roomController.createRoomPrice
 )
 
 router.post(
@@ -109,5 +102,21 @@ router.delete(
   verifyRoleTenant,
   verifyRoomOwnership,
   roomController.deleteRoom
+)
+
+router.post(
+  "/price/:id",
+  verifyToken,
+  verifyRoleTenant,
+  verifyRoomOwnership,
+  roomController.createRoomPrice
+)
+
+router.patch(
+  "/price/:id",
+  verifyToken,
+  verifyRoleTenant,
+  verifyRoomPriceOwenership,
+  roomController.updatePrice
 )
 module.exports = router

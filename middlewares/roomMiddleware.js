@@ -90,8 +90,43 @@ const verifyRoomImageOwenership = async (req, res, next) => {
     })
   }
 }
+
+const verifyRoomPriceOwenership = async (req, res, next) => {
+  try {
+    const foundRoomprice = await prisma.roomPrice.findFirst({
+      where: {
+        id: req.params.id,
+      },
+      include: {
+        room: {
+          include: {
+            property: true,
+          },
+        },
+      },
+    })
+
+    if (!foundRoomprice) {
+      return res.status(400).json({
+        message: "Room price doesn't exist",
+      })
+    }
+
+    if (foundRoomprice.room.property.userId !== req.user.id) {
+      return res.status(400).json({
+        message: "Restricted",
+      })
+    }
+    next()
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message,
+    })
+  }
+}
 module.exports = {
   verifyRoomOwnership,
   validateMaxLengthRoomImages,
   verifyRoomImageOwenership,
+  verifyRoomPriceOwenership,
 }
