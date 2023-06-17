@@ -285,8 +285,11 @@ const propertyController = {
           propertyImages: true,
           rooms: {
             include: {
-              roomImages: true,
-              roomPrice: true,
+              roomPrice: {
+                orderBy: {
+                  price: "asc",
+                },
+              },
             },
           },
         },
@@ -298,7 +301,6 @@ const propertyController = {
         page,
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
