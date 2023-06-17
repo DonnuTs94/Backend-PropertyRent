@@ -20,9 +20,11 @@ const {
   SIZE_2MB,
 } = require("../configs/constant/upload")
 
-const route = express.Router()
+const router = express.Router()
 
-route.post(
+router.get("/all-property", propertyController.fetchAllProperty)
+
+router.post(
   "/",
   verifyToken,
   verifyRoleTenant,
@@ -37,7 +39,7 @@ route.post(
   propertyController.createProperty
 )
 
-route.patch(
+router.patch(
   "/:id",
   verifyToken,
   verifyRoleTenant,
@@ -45,7 +47,7 @@ route.patch(
   propertyController.updateProperty
 )
 
-route.patch(
+router.patch(
   "/delete/:id",
   verifyToken,
   verifyRoleTenant,
@@ -53,7 +55,7 @@ route.patch(
   propertyController.softDeleteProperty
 )
 
-route.delete(
+router.delete(
   "/delete/:id",
   verifyToken,
   verifyRoleTenant,
@@ -61,14 +63,14 @@ route.delete(
   propertyController.deleteProperty
 )
 
-route.get(
+router.get(
   "/",
   verifyToken,
   verifyRoleTenant,
   propertyController.fetchAllTenantProperty
 )
 
-route.get(
+router.get(
   "/:id",
   verifyToken,
   verifyRoleTenant,
@@ -76,7 +78,7 @@ route.get(
   propertyController.fetchSpecificProperty
 )
 
-route.post(
+router.post(
   "/image/:id",
   verifyToken,
   verifyRoleTenant,
@@ -93,7 +95,7 @@ route.post(
   propertyController.postPropertyImagePath
 )
 
-route.delete(
+router.delete(
   "/image/:id",
   verifyToken,
   verifyRoleTenant,
@@ -101,4 +103,4 @@ route.delete(
   propertyController.deletePropertyImagePath
 )
 
-module.exports = route
+module.exports = router

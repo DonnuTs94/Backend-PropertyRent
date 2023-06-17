@@ -270,6 +270,40 @@ const propertyController = {
       })
     }
   },
+  fetchAllProperty: async (req, res) => {
+    const { page } = req.query
+    const pageSize = 5
+    const offset = (page - 1) * parseInt(pageSize)
+    try {
+      const renderProperty = await prisma.properties.findMany({
+        take: parseInt(pageSize),
+        skip: offset,
+        include: {
+          province: true,
+          city: true,
+          category: true,
+          propertyImages: true,
+          rooms: {
+            include: {
+              roomImages: true,
+              roomPrice: true,
+            },
+          },
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success fetch property data",
+        data: renderProperty,
+        page,
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = propertyController
