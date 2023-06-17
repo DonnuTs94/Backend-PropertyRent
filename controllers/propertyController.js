@@ -219,7 +219,17 @@ const propertyController = {
             deleted: false,
           },
         },
-        include: { province: true, city: true, propertyImages: true },
+        include: {
+          province: true,
+          city: true,
+          propertyImages: true,
+          rooms: {
+            include: {
+              roomImages: true,
+              roomPrice: true,
+            },
+          },
+        },
       })
 
       return res.status(200).json({
@@ -278,6 +288,9 @@ const propertyController = {
       const renderProperty = await prisma.properties.findMany({
         take: parseInt(pageSize),
         skip: offset,
+        where: {
+          deleted: false,
+        },
         include: {
           province: true,
           city: true,
