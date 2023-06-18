@@ -5,6 +5,7 @@ const categoryRoute = require("../routes/categoryRoute")
 const propertyRoute = require("../routes/propertyRoute")
 const roomRoute = require("../routes/roomRoute")
 const statusRoute = require("../routes/statusRoute")
+const ordersRoute = require("../routes/ordersRoute")
 
 const PORT = process.env.PORT || 8000
 
@@ -19,6 +20,7 @@ app.use("/category", categoryRoute)
 app.use("/property", propertyRoute)
 app.use("/room", roomRoute)
 app.use("/status", statusRoute)
+app.use("/order", ordersRoute)
 
 app.listen(PORT, (err) => {
   console.log(`SERVER RUNING on Port ${PORT}`)

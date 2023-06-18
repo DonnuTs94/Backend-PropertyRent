@@ -103,11 +103,9 @@ model Orders {
   user       User?    @relation(fields: [userId], references: [id])
   userId     String
   room       Rooms?   @relation(fields: [roomId], references: [id])
-  roomId     String?
-  Status     Status   @relation(fields: [statusId], references: [id])
+  roomId     String?  @unique
+  status     Status   @relation(fields: [statusId], references: [id])
   statusId   String
-
-  @@unique([roomId])
 }
 
 model Status {
