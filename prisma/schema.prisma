@@ -70,7 +70,7 @@ model Rooms {
   propertyId String
   roomImages RoomImages[]
   roomPrice  RoomPrice[]
-  order      Orders?
+  order      Orders[]
 }
 
 model RoomImages {
@@ -94,8 +94,8 @@ model RoomPrice {
 
 model Orders {
   id         String   @id @default(uuid())
-  startDate  DateTime @db.DateTime()
-  endDate    DateTime @db.DateTime()
+  startDate  DateTime @db.Date()
+  endDate    DateTime @db.Date()
   expDate    DateTime @db.DateTime()
   totalPrice Int
   createdAt  DateTime @default(now())
@@ -103,7 +103,7 @@ model Orders {
   user       User?    @relation(fields: [userId], references: [id])
   userId     String
   room       Rooms?   @relation(fields: [roomId], references: [id])
-  roomId     String?  @unique
+  roomId     String?
   status     Status   @relation(fields: [statusId], references: [id])
   statusId   String
 }

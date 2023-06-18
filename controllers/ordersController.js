@@ -1,9 +1,5 @@
 const { PrismaClient } = require("@prisma/client")
 const moment = require("moment")
-const {
-  UNIQUE_CONSTRAINT,
-  TARGET_ORDERS_ROOMID,
-} = require("../configs/constant/databaseError")
 
 const prisma = new PrismaClient()
 
@@ -14,45 +10,34 @@ const ordersController = {
         where: {
           id: req.params.id,
         },
-        include: {
-          roomPrice: true,
-        },
       })
-
-      const foundRoomPrice = await prisma.roomPrice.findMany({
-        where: {
-          roomId: req.params.id,
-        },
-      })
-
       let startDate = new Date(req.body.startDate)
       let endDate = new Date(req.body.endDate)
 
-      const expDate = moment(startDate)
-        .add(2, "hours")
-        .format("YYYY-MM-DDTHH:MM:SSZ")
+      const sumPrice = await prisma.roomPrice.aggregate({
+        _sum: {
+          price: true,
+        },
+        where: {
+          roomId: req.params.id,
+          date: {
+            gte: startDate,
+            lte: endDate,
+          },
+        },
+      })
 
-      const totalPrice = foundRoomPrice.reduce((sum, item) => {
-        const itemDate = moment(item.date)
-        if (
-          itemDate.isSameOrAfter(startDate, "day") &&
-          itemDate.isSameOrBefore(endDate, "day")
-        ) {
-          return sum + item.price
-        }
-        return sum
-      }, 0)
+      const expDate = moment().add(2, "hours").toDate()
 
-      console.log(totalPrice)
       const createOrders = await prisma.orders.create({
         data: {
           roomId: foundRoomId.id,
           startDate: startDate,
           endDate: endDate,
           expDate: expDate,
-          userId: "b3af4e3e-755c-4141-b5ba-c5a0dd86edb8",
-          totalPrice: totalPrice,
-          statusId: "3f2f931f-a14c-4734-96ee-c31722fddd94",
+          userId: "a5910bda-5d7e-441d-acac-af394e26136f",
+          totalPrice: sumPrice._sum.price,
+          statusId: "e2f9dc65-5189-4c8b-8c95-42a120ed0518",
         },
       })
 
@@ -61,14 +46,7 @@ const ordersController = {
         data: createOrders,
       })
     } catch (err) {
-      if (
-        err?.code === "P2002" &&
-        err?.meta?.target?.includes("Orders_roomId_key")
-      ) {
-        return res.status(400).json({
-          message: "Room is Full",
-        })
-      }
+      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
