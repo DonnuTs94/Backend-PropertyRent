@@ -11,7 +11,6 @@ const paymentCheck = (objectOrders) => {
     })
 
     if (objectOrders.status.status === "Waiting for Payment") {
-      console.log("Hello")
       await prisma.orders.update({
         where: {
           id: getOrders.id,
