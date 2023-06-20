@@ -10,13 +10,13 @@ const paymentCheck = (objectOrders) => {
       },
     })
 
-    if (objectOrders.status.status === "Waiting for Payment") {
+    if (objectOrders.status === "waitingForPayment") {
       await prisma.orders.update({
         where: {
           id: getOrders.id,
         },
         data: {
-          statusId: "4d3e4d6a-2521-47ff-b94c-c93e0ac06179",
+          status: "canceled",
         },
       })
     }

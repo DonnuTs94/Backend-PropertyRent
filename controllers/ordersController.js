@@ -12,7 +12,7 @@ const ordersController = {
 
       const findUserisVerif = await prisma.user.findFirst({
         where: {
-          id: "a5910bda-5d7e-441d-acac-af394e26136f",
+          id: req.user.id,
         },
       })
 
@@ -73,29 +73,19 @@ const ordersController = {
           startDate: startDate,
           endDate: endDate,
           expDate: expDate,
-          // userId: "3235cd49-2594-4095-8419-65f479d01d3a",
-          userId: "a5910bda-5d7e-441d-acac-af394e26136f",
+          userId: findUserisVerif.id,
           totalPrice: calculateTotalPrice._sum.price,
-          // statusId: "3f2f931f-a14c-4734-96ee-c31722fddd94",
-          statusId: "9a87c5da-541b-4977-88c7-4c0fdeb21c92",
+          status: "waitingForPayment",
         },
       })
 
-      const ordersDataResult = await prisma.orders.findUnique({
-        where: {
-          id: createOrders.id,
-        },
-        include: { status: true },
-      })
-
-      automaticPaymentCheck(ordersDataResult)
+      automaticPaymentCheck(createOrders)
 
       return res.status(200).json({
         message: "Success create new order",
-        data: ordersDataResult,
+        data: createOrders,
       })
     } catch (err) {
-      // console.log(err)
       return res.status(500).json({
         message: err.message,
       })
