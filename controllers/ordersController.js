@@ -30,13 +30,11 @@ const ordersController = {
         include: {
           order: {
             where: {
-              NOT: {
-                startDate: {
-                  lte: endDate,
-                },
-                endDate: {
-                  gte: startDate,
-                },
+              startDate: {
+                lte: endDate,
+              },
+              endDate: {
+                gte: startDate,
               },
             },
           },
@@ -89,6 +87,7 @@ const ordersController = {
         data: createOrders,
       })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         message: err.message,
       })

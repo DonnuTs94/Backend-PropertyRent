@@ -310,9 +310,62 @@ const roomController = {
   },
   fetchAvailableRoom: async (req, res) => {
     try {
-      const foundDateFromOrders = await prisma.orders.findFirst({
+      const currentDate = new Date()
+      const foundDateFromOrders = await prisma.orders.findMany({
         where: {
           roomId: req.params.id,
+          OR: [
+            {
+              startDate: {
+                gte: currentDate,
+              },
+            },
+            {
+              startDate: {
+                lte: currentDate,
+              },
+              endDate: {
+                gte: currentDate,
+              },
+            },
+          ],
+        },
+        select: {
+          startDate: true,
+          endDate: true,
+        },
+      })
+
+      const unavailableDates = await Promise.all(
+        foundDateFromOrders.map((order) =>
+          prisma.roomPrice.findMany({
+            where: {
+              roomId: req.params.id,
+              date: {
+                gte: order.startDate,
+                lte: order.endDate,
+              },
+            },
+            select: {
+              date: true,
+            },
+            orderBy: {
+              date: "asc",
+            },
+          })
+        )
+      ).then((result) => result.flat())
+
+      const availableDates = await prisma.roomPrice.findMany({
+        where: {
+          roomId: req.params.id,
+          date: {
+            gte: currentDate,
+            notIn: unavailableDates.map((date) => date.date),
+          },
+        },
+        orderBy: {
+          date: "asc",
         },
       })
 
@@ -323,12 +376,12 @@ const roomController = {
         include: {
           roomPrice: {
             where: {
-              NOT: {
-                date: {
-                  gte: foundDateFromOrders.startDate,
-                  lte: foundDateFromOrders.endDate,
-                },
+              id: {
+                in: availableDates.map((date) => date.id),
               },
+            },
+            orderBy: {
+              date: "asc",
             },
           },
           roomImages: true,
