@@ -24,6 +24,8 @@ const { TENANT_ROOM_PATH } = require("../configs/constant/uploadFilePath")
 
 const router = express.Router()
 
+router.get("/user/:id", roomController.fetchAvailableRoom)
+
 router.post(
   "/:id",
   verifyToken,

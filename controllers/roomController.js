@@ -308,6 +308,43 @@ const roomController = {
       })
     }
   },
+  fetchAvailableRoom: async (req, res) => {
+    try {
+      const foundDateFromOrders = await prisma.orders.findFirst({
+        where: {
+          roomId: req.params.id,
+        },
+      })
+
+      const fetchRoomById = await prisma.rooms.findUnique({
+        where: {
+          id: req.params.id,
+        },
+        include: {
+          roomPrice: {
+            where: {
+              NOT: {
+                date: {
+                  gte: foundDateFromOrders.startDate,
+                  lte: foundDateFromOrders.endDate,
+                },
+              },
+            },
+          },
+          roomImages: true,
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success fetch room",
+        data: fetchRoomById,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = roomController

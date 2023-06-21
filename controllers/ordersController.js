@@ -26,14 +26,17 @@ const ordersController = {
         where: {
           id: req.params.id,
         },
+
         include: {
           order: {
             where: {
-              startDate: {
-                lte: endDate,
-              },
-              endDate: {
-                gte: startDate,
+              NOT: {
+                startDate: {
+                  lte: endDate,
+                },
+                endDate: {
+                  gte: startDate,
+                },
               },
             },
           },
