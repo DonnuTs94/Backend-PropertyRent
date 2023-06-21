@@ -349,9 +349,6 @@ const roomController = {
             select: {
               date: true,
             },
-            orderBy: {
-              date: "asc",
-            },
           })
         )
       ).then((result) => result.flat())
@@ -363,9 +360,6 @@ const roomController = {
             gte: currentDate,
             notIn: unavailableDates.map((date) => date.date),
           },
-        },
-        orderBy: {
-          date: "asc",
         },
       })
 
