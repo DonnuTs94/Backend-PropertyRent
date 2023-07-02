@@ -4,30 +4,27 @@ const prisma = new PrismaClient()
 async function main() {
   const DIY = await prisma.Provincies.upsert({
     where: {
-      provincy: "DKI Jakarta",
+      provincy: "DI Yogyakarta",
     },
     update: {},
     create: {
-      provincy: "DKI Jakarta",
+      provincy: "DI Yogyakarta",
       city: {
         create: [
           {
-            city: "Kota Jakarta Timur",
+            city: "Kota Yogyakarta",
           },
           {
-            city: "Kota Jakarta Selatan",
+            city: "Kab. Sleman",
           },
           {
-            city: "Kota Jakarta Barat",
+            city: "Kab. Gunung Kidul",
           },
           {
-            city: "Kota Jakarta Utara",
+            city: "Kab. Bantul",
           },
           {
-            city: "Kota Jakarta Pusat",
-          },
-          {
-            city: "Kab. Kepulauan Seribu",
+            city: "Kab. Kulon Progo",
           },
         ],
       },
