@@ -10,7 +10,6 @@ const search = {
       const queryDate = req.query.date
       const currentDate = moment().format("YYYY-MM-DD")
       const date = queryDate ? new Date(queryDate) : new Date(currentDate)
-      console.log(date)
       const foundProperty = await prisma.properties.findMany({
         where: {
           province: {
@@ -23,23 +22,17 @@ const search = {
               contains: city,
             },
           },
-          rooms: {
-            every: {
-              roomPrice: {
-                every: {
-                  date: {
-                    gte: new Date("2023-07-06"),
-                    // lte: date,
-                  },
-                },
-              },
-            },
-          },
         },
         include: {
           rooms: {
             include: {
               roomPrice: {
+                where: {
+                  date: {
+                    gte: date,
+                    // lte: date,
+                  },
+                },
                 orderBy: {
                   price: "asc",
                 },
@@ -58,7 +51,6 @@ const search = {
       return res.status(200).json({
         message: "success",
         data: foundProperty,
-        // data: date,
       })
     } catch (err) {
       console.log(err)
