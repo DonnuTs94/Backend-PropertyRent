@@ -11,7 +11,6 @@ const search = {
       const endDate = req.query.endDate
       const currentDate = new Date()
 
-      // Memeriksa apakah startDate kurang dari atau sama dengan tanggal hari ini
       if (new Date(startDate) < currentDate) {
         return res.status(400).json({
           message: "Minimum search date is today",
@@ -32,13 +31,15 @@ const search = {
           },
         },
         include: {
+          propertyImages: true,
           rooms: {
             include: {
+              order: true,
               roomPrice: {
                 where: {
                   date: {
                     gte: new Date(startDate),
-                    lte: new Date(endDate),
+                    lt: new Date(endDate),
                   },
                 },
                 orderBy: {
@@ -50,80 +51,37 @@ const search = {
         },
       })
 
-      const availableProperties = await Promise.all(
-        foundProperties.map(async (property) => {
-          const roomIds = property.rooms.map((room) => room.id)
-
-          const orders = await prisma.orders.findMany({
-            where: {
-              roomId: {
-                in: roomIds,
-              },
-              OR: [
-                {
-                  startDate: {
-                    lte: new Date(endDate),
-                  },
-                  endDate: {
-                    gte: new Date(startDate),
-                  },
-                },
-              ],
-            },
-          })
-
-          const isRoomAvailable = property.rooms.every((room) => {
-            const isPriceUnavailable = orders.some(
-              (order) =>
-                order.startDate <= new Date(endDate) &&
-                order.endDate >= new Date(startDate)
-            )
-            return !isPriceUnavailable
-          })
-
-          if (isRoomAvailable) {
-            // Menghapus room yang tidak tersedia pada tanggal tertentu
-            property.rooms = property.rooms.filter((room) => {
-              const roomPriceDates = new Set(
-                room.roomPrice.map(
-                  (price) => price.date.toISOString().split("T")[0]
-                )
-              )
-
-              // Memeriksa apakah semua tanggal dalam rentang waktu dimiliki oleh roomPrice
-              for (
-                let date = new Date(startDate);
-                date <= new Date(endDate);
-                date.setDate(date.getDate() + 1)
-              ) {
-                if (!roomPriceDates.has(date.toISOString().split("T")[0])) {
-                  return false
-                }
-              }
-
-              return true
-            })
-
-            return property
+      const filteredRoomPrice = foundProperties.filter((property) => {
+        property.rooms = property.rooms.filter((room) => {
+          if (room.roomPrice.length === 0) {
+            return false
           }
-
-          return null
+          return true
         })
-      )
 
-      const filteredProperties = availableProperties.filter(
-        (property) => property !== null && property.rooms.length > 0
-      )
+        if (property.rooms.length === 0) {
+          return false
+        }
+        return true
+      })
 
-      if (filteredProperties.length === 0) {
-        return res.status(400).json({
-          message: "No available rooms",
+      const filterRoomOrder = filteredRoomPrice.filter((property) => {
+        property.rooms = property.rooms.filter((room) => {
+          const isUnavailable = room.order.some((od) => {
+            return (
+              od.startDate <= new Date(endDate) &&
+              od.endDate >= new Date(startDate)
+            )
+          })
+          delete room.order
+          return !isUnavailable
         })
-      }
+        return property.rooms.length === 0 ? false : true
+      })
 
       return res.status(200).json({
         message: "Success",
-        data: filteredProperties,
+        data: filterRoomOrder,
       })
     } catch (err) {
       console.log(err)
