@@ -118,6 +118,7 @@ const search = {
           rooms: {
             include: {
               order: true,
+              roomImages: true,
               roomPrice: {
                 where: {
                   date: {
