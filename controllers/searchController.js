@@ -101,6 +101,60 @@ const search = {
       })
     }
   },
+  userGetPropertyDetail: async (req, res) => {
+    try {
+      const currentDate = new Date(moment().format("YYYY-MM-DD"))
+      const startDate = req.query.startDate ? req.query.startDate : currentDate
+      const endDate = req.query.endDate
+        ? req.query.endDate
+        : new Date(moment(currentDate).add(1, "day"))
+
+      const foundPropertyById = await prisma.properties.findUnique({
+        where: {
+          id: req.params.id,
+        },
+        include: {
+          propertyImages: true,
+          rooms: {
+            include: {
+              order: true,
+              roomPrice: {
+                where: {
+                  date: {
+                    gte: new Date(startDate),
+                    lt: new Date(endDate),
+                  },
+                },
+                orderBy: {
+                  date: "asc",
+                },
+              },
+            },
+          },
+        },
+      })
+
+      foundPropertyById.rooms = foundPropertyById.rooms.filter((room) => {
+        const isUnavailable = room.order.some((od) => {
+          return (
+            od.startDate <= new Date(endDate) &&
+            od.endDate >= new Date(startDate)
+          )
+        })
+        delete room.order
+        return !isUnavailable
+      })
+
+      return res.status(200).json({
+        message: "Success",
+        data: foundPropertyById,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = search

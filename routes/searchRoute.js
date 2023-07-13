@@ -3,5 +3,6 @@ const router = express.Router()
 const searchController = require("../controllers/searchController")
 
 router.get("/", searchController.userGetAllProperty)
+router.get("/property/:id", searchController.userGetPropertyDetail)
 
 module.exports = router
