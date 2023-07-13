@@ -92,6 +92,42 @@ const ordersController = {
       })
     }
   },
+  paymentProof: async (req, res) => {
+    try {
+      const foundOrder = await prisma.orders.findFirst({
+        where: {
+          id: req.params.id,
+        },
+      })
+
+      if (foundOrder.userId !== req.user.id) {
+        return res.status(400).json({
+          message: "User unautorized",
+        })
+      }
+
+      if (foundOrder.status !== "waitingForPayment") {
+        return res.status(400).json({
+          message: "Not allowed to upload payment proof",
+        })
+      }
+
+      const uploadPaymentProof = await prisma.orders.update({
+        where: {
+          id: foundOrder.id,
+        },
+        data: {
+          paymentUrl: req.file.filename,
+          status: "waitingForConfirmation",
+        },
+      })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = ordersController
