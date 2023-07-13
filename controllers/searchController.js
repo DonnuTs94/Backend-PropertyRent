@@ -38,6 +38,9 @@ const search = {
         },
         include: {
           propertyImages: true,
+          category: true,
+          province: true,
+          city: true,
           rooms: {
             include: {
               order: true,
@@ -115,6 +118,9 @@ const search = {
         },
         include: {
           propertyImages: true,
+          province: true,
+          city: true,
+          category: true,
           rooms: {
             include: {
               order: true,
@@ -149,6 +155,27 @@ const search = {
       return res.status(200).json({
         message: "Success",
         data: foundPropertyById,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  userGetRoomDetail: async (req, res) => {
+    try {
+      const foundRoomById = await prisma.rooms.findUnique({
+        where: {
+          id: req.params.id,
+        },
+        include: {
+          roomImages: true,
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success got room by id",
+        data: foundRoomById,
       })
     } catch (err) {
       return res.status(500).json({
