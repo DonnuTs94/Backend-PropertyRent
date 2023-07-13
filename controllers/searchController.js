@@ -3,13 +3,16 @@ const moment = require("moment")
 const prisma = new PrismaClient()
 
 const search = {
-  mainSearch: async (req, res) => {
+  userGetAllProperty: async (req, res) => {
     try {
+      const propertyName = req.query.propertyName
       const provincy = req.query.provincy
       const city = req.query.city
-      const startDate = req.query.startDate
+      const currentDate = new Date(moment().format("YYYY-MM-DD"))
+      const startDate = req.query.startDate ? req.query.startDate : currentDate
       const endDate = req.query.endDate
-      const currentDate = new Date()
+        ? req.query.endDate
+        : new Date(moment(currentDate, "YYYY-MM-DD").add(1, "day"))
 
       if (new Date(startDate) < currentDate) {
         return res.status(400).json({
@@ -19,6 +22,9 @@ const search = {
 
       const foundProperties = await prisma.properties.findMany({
         where: {
+          name: {
+            contains: propertyName,
+          },
           province: {
             provincy: {
               contains: provincy,
@@ -78,6 +84,12 @@ const search = {
         })
         return property.rooms.length === 0 ? false : true
       })
+
+      if (filterRoomOrder.length === 0) {
+        return res.status(400).json({
+          message: "Data not found!",
+        })
+      }
 
       return res.status(200).json({
         message: "Success",
