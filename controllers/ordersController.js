@@ -221,6 +221,55 @@ const ordersController = {
       })
     }
   },
+  tenantCancleOrder: async (req, res) => {
+    try {
+      const foundOrder = await prisma.orders.findFirst({
+        where: {
+          id: req.params.id,
+        },
+        include: {
+          room: {
+            include: {
+              property: true,
+            },
+          },
+        },
+      })
+
+      if (foundOrder.room.property.userId !== req.user.id) {
+        return res.status(400).json({
+          message: "User unauthorized",
+        })
+      }
+
+      if (
+        foundOrder.status !== "waitingForPayment" &&
+        foundOrder.status !== "waitingForConfirmation"
+      ) {
+        return res.status(400).json({
+          message: "Not allowed cancel this order",
+        })
+      }
+
+      const tenantCancelOrder = await prisma.orders.update({
+        where: {
+          id: foundOrder.id,
+        },
+        data: {
+          status: "canceledTenant",
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success cancel this order",
+        data: tenantCancelOrder,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = ordersController

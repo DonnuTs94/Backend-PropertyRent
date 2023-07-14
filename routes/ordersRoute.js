@@ -45,4 +45,11 @@ router.patch(
   verifyRoleTenant,
   ordersController.tenantApproveOrder
 )
+
+router.patch(
+  "/tenant/cancel/:id",
+  verifyToken,
+  verifyRoleTenant,
+  ordersController.tenantCancleOrder
+)
 module.exports = router
