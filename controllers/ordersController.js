@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client")
 const moment = require("moment")
 const automaticPaymentCheck = require("../schedule/paymentCheck")
-
+const fs = require("fs")
 const prisma = new PrismaClient()
 
 const ordersController = {
@@ -107,6 +107,7 @@ const ordersController = {
       }
 
       if (foundOrder.status !== "waitingForPayment") {
+        fs.unlinkSync(req.file.path)
         return res.status(400).json({
           message: "Not allowed to upload payment proof",
         })
@@ -121,8 +122,12 @@ const ordersController = {
           status: "waitingForConfirmation",
         },
       })
+
+      return res.status(200).json({
+        message: "Success upload payment",
+        data: uploadPaymentProof,
+      })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
