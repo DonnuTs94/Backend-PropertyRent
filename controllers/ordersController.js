@@ -133,6 +133,48 @@ const ordersController = {
       })
     }
   },
+  userCancelOrder: async (req, res) => {
+    try {
+      const foundOrder = await prisma.orders.findFirst({
+        where: {
+          id: req.params.id,
+        },
+      })
+
+      if (foundOrder.userId !== req.user.id) {
+        return res.status(400).json({
+          message: "User unauthorized",
+        })
+      }
+
+      if (
+        foundOrder.status !== "waitingForPayment" &&
+        foundOrder.status !== "waitingForConfirmation"
+      ) {
+        return res.status(400).json({
+          message: "Not allowed to cancel this order",
+        })
+      }
+
+      const updateStatus = await prisma.orders.update({
+        where: {
+          id: foundOrder.id,
+        },
+        data: {
+          status: "canceled",
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success cancel this order",
+        data: updateStatus,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = ordersController

@@ -28,5 +28,11 @@ router.patch(
   }),
   ordersController.paymentProof
 )
+router.patch(
+  "/user/cancel/:id",
+  verifyToken,
+  verifyRoleUser,
+  ordersController.userCancelOrder
+)
 
 module.exports = router
