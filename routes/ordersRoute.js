@@ -1,6 +1,10 @@
 const expres = require("express")
 const ordersController = require("../controllers/ordersController")
-const { verifyRoleUser, verifyToken } = require("../middlewares/authMiddleware")
+const {
+  verifyRoleUser,
+  verifyToken,
+  verifyRoleTenant,
+} = require("../middlewares/authMiddleware")
 const {
   validateFileUpload,
 } = require("../middlewares/imagesValidatorMiddleware")
@@ -35,4 +39,10 @@ router.patch(
   ordersController.userCancelOrder
 )
 
+router.patch(
+  "/tenant/approve/:id",
+  verifyToken,
+  verifyRoleTenant,
+  ordersController.tenantApproveOrder
+)
 module.exports = router

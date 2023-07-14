@@ -175,6 +175,52 @@ const ordersController = {
       })
     }
   },
+  tenantApproveOrder: async (req, res) => {
+    try {
+      const foundOrder = await prisma.orders.findFirst({
+        where: {
+          id: req.params.id,
+        },
+        include: {
+          room: {
+            include: {
+              property: true,
+            },
+          },
+        },
+      })
+
+      if (foundOrder.room.property.userId !== req.user.id) {
+        return res.status(400).json({
+          message: "Tenant unauthorized",
+        })
+      }
+
+      if (foundOrder.status !== "waitingForConfirmation") {
+        return res.status(400).json({
+          message: "Not allowed to approve this order",
+        })
+      }
+
+      const approveOrder = await prisma.orders.update({
+        where: {
+          id: foundOrder.id,
+        },
+        data: {
+          status: "inProgress",
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success approve this order",
+        data: approveOrder,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = ordersController
