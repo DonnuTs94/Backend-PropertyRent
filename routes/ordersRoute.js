@@ -52,4 +52,12 @@ router.patch(
   verifyRoleTenant,
   ordersController.tenantCancleOrder
 )
+
+router.get(
+  "/user-order/",
+  verifyToken,
+  verifyRoleUser,
+  ordersController.userAllOrderList
+)
+
 module.exports = router

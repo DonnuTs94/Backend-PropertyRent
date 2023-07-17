@@ -270,6 +270,58 @@ const ordersController = {
       })
     }
   },
+  userAllOrderList: async (req, res) => {
+    try {
+      const { status, id, sortId, sortDate, page } = req.query
+      const pageSize = 10
+      const offset = (page - 1) * parseInt(pageSize)
+
+      const fetchAllUserOrder = await prisma.orders.findMany({
+        take: pageSize,
+        skip: offset,
+        where: {
+          userId: req.user.id,
+          status: {
+            equals: status,
+          },
+          id: {
+            contains: id,
+          },
+        },
+        orderBy: {
+          id: sortId,
+          createdAt: sortDate,
+        },
+        include: {
+          room: {
+            include: {
+              property: {
+                include: {
+                  propertyImages: true,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      if (fetchAllUserOrder.length === 0) {
+        return res.status(400).json({
+          message: "Data not found",
+        })
+      }
+
+      return res.status(200).json({
+        message: "Success",
+        data: fetchAllUserOrder,
+        page,
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
 }
 
 module.exports = ordersController
