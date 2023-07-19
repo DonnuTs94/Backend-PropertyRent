@@ -17,6 +17,7 @@ const {
   PASSWORD_VALIDATOR,
 } = require("../configs/constant/regexValidator")
 const { ENOENT_CODE } = require("../configs/constant/errorCode")
+const moment = require("moment/moment")
 
 const prisma = new PrismaClient()
 
@@ -54,6 +55,17 @@ const authController = {
           birthday: birthdayDate,
           gender: gender,
           role: roleEnum.USER,
+        },
+      })
+
+      const generateOtp = Math.round(Math.random() * 10000)
+        .toString()
+        .padStart(4, "0")
+      await prisma.otp.create({
+        data: {
+          userId: newUser.id,
+          otp: generateOtp,
+          expTime: new Date(moment().add(15, "minutes")),
         },
       })
 
@@ -118,6 +130,17 @@ const authController = {
           birthday: birthdayDate,
           gender: gender,
           role: roleEnum.TENANT,
+        },
+      })
+
+      const generateOtp = Math.round(Math.random() * 10000)
+        .toString()
+        .padStart(4, "0")
+      await prisma.otp.create({
+        data: {
+          userId: newTenant.id,
+          otp: generateOtp,
+          expTime: new Date(moment().add(15, "minutes")),
         },
       })
 
@@ -487,6 +510,82 @@ const authController = {
       if (err.code === ENOENT_CODE) {
         fs.unlinkSync(req.file.path)
       }
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  verifyUser: async (req, res) => {
+    try {
+      const foundUserOtp = await prisma.otp.findFirst({
+        where: {
+          userId: req.user.id,
+        },
+      })
+
+      if (foundUserOtp.otp !== req.body.otp) {
+        return res.status(400).json({
+          message: "Invalid OTP",
+        })
+      }
+
+      await prisma.user.update({
+        where: {
+          id: foundUserOtp.userId,
+        },
+        data: {
+          isVerified: true,
+        },
+      })
+
+      await prisma.otp.delete({
+        where: {
+          id: foundUserOtp.id,
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success verif user",
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  verifyTenant: async (req, res) => {
+    try {
+      const foundTenantOtp = await prisma.otp.findFirst({
+        where: {
+          userId: req.user.id,
+        },
+      })
+
+      if (foundTenantOtp.otp !== req.body.otp) {
+        return res.status(400).json({
+          message: "Invalid OTP",
+        })
+      }
+
+      await prisma.user.update({
+        where: {
+          id: foundTenantOtp.userId,
+        },
+        data: {
+          isVerified: true,
+        },
+      })
+
+      await prisma.otp.delete({
+        where: {
+          id: foundTenantOtp.id,
+        },
+      })
+
+      return res.status(200).json({
+        message: "Success verif tenant",
+      })
+    } catch (err) {
       return res.status(500).json({
         message: err.message,
       })

@@ -80,4 +80,18 @@ router.patch(
   authController.uploadProfileTenant
 )
 
+router.patch(
+  "/user/verify/",
+  verifyToken,
+  verifyRoleUser,
+  authController.verifyUser
+)
+
+router.patch(
+  "/tenant/verify",
+  verifyToken,
+  verifyRoleTenant,
+  authController.verifyTenant
+)
+
 module.exports = router
