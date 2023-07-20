@@ -23,7 +23,6 @@ const { ENOENT_CODE } = require("../configs/constant/errorCode")
 const moment = require("moment/moment")
 
 const prisma = new PrismaClient()
-let tryAttempt = 0
 
 const authController = {
   registerUser: async (req, res) => {
@@ -555,22 +554,18 @@ const authController = {
       })
 
       if (foundUserOtp.otp !== req.body.otp) {
-        tryAttempt++
-        console.log(tryAttempt)
         return res.status(400).json({
           message: "Invalid OTP",
         })
       }
 
-      if (tryAttempt === 3) {
-        await prisma.otp.delete({
-          where: {
-            id: foundUserOtp.id,
-          },
+      const currentDate = new Date()
+
+      if (currentDate > foundUserOtp.expTime) {
+        return res.status(400).json({
+          message: "Otp expired and you have to generate new otp",
         })
       }
-
-      // tryAttempt = 0
 
       await prisma.user.update({
         where: {
@@ -591,7 +586,6 @@ const authController = {
         message: "Success verif user",
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
@@ -608,6 +602,14 @@ const authController = {
       if (foundTenantOtp.otp !== req.body.otp) {
         return res.status(400).json({
           message: "Invalid OTP",
+        })
+      }
+
+      const currentDate = new Date()
+
+      if (currentDate > foundTenantOtp.expTime) {
+        return res.status(400).json({
+          message: "Otp expired and you have to generate new otp",
         })
       }
 
@@ -628,6 +630,55 @@ const authController = {
 
       return res.status(200).json({
         message: "Success verif tenant",
+      })
+    } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  resentOtp: async (req, res) => {
+    try {
+      const foundUserOtp = await prisma.otp.findFirst({
+        where: {
+          userId: req.user.id,
+        },
+        include: {
+          user: true,
+        },
+      })
+
+      const generateOtp = Math.round(Math.random() * 10000)
+        .toString()
+        .padStart(4, "0")
+      const updateOtp = await prisma.otp.update({
+        where: {
+          id: foundUserOtp.id,
+        },
+        data: {
+          otp: generateOtp,
+          expTime: new Date(moment().add(15, "minutes")),
+        },
+      })
+
+      const { email, username } = foundUserOtp.user
+
+      const rawHTML = fs.readFileSync("templates/sendOtp.html", "utf-8")
+      const compiledHTML = handlebars.compile(rawHTML)
+      const htmlResult = compiledHTML({
+        username,
+        generateOtp,
+      })
+
+      await emailer({
+        to: email,
+        html: htmlResult,
+        subject: "Your otp code",
+      })
+
+      return res.status(200).json({
+        message: "Success generate new OTP",
+        data: updateOtp,
       })
     } catch (err) {
       return res.status(500).json({

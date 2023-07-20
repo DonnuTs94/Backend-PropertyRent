@@ -94,4 +94,6 @@ router.patch(
   authController.verifyTenant
 )
 
+router.patch("/resent-otp", verifyToken, authController.resentOtp)
+
 module.exports = router
