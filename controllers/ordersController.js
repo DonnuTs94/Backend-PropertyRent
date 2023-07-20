@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient, Status } = require("@prisma/client")
 const moment = require("moment")
 const automaticPaymentCheck = require("../schedule/paymentCheck")
 const fs = require("fs")
@@ -317,6 +317,56 @@ const ordersController = {
         page,
       })
     } catch (err) {
+      return res.status(500).json({
+        message: err.message,
+      })
+    }
+  },
+  tenantAllOrderlist: async (req, res) => {
+    try {
+      const filterStatus = req.query.status
+      const fetchAllTenantOrder = await prisma.properties.findMany({
+        where: {
+          userId: req.user.id,
+        },
+        select: {
+          name: true,
+          rooms: {
+            select: {
+              name: true,
+              order: {
+                select: {
+                  id: true,
+                  status: true,
+                },
+                where: {
+                  status: filterStatus,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      const filteredOrder = fetchAllTenantOrder.filter((property) => {
+        property.rooms = property.rooms.filter((room) => {
+          if (room.order.length === 0) {
+            return false
+          }
+          return true
+        })
+        if (property.rooms.length === 0) {
+          return false
+        }
+        return true
+      })
+
+      return res.status(200).json({
+        message: "Success fetch all tenant orders",
+        data: filteredOrder,
+      })
+    } catch (err) {
+      console.log(err)
       return res.status(500).json({
         message: err.message,
       })

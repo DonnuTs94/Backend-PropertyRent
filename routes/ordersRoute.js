@@ -60,4 +60,10 @@ router.get(
   ordersController.userAllOrderList
 )
 
+router.get(
+  "/tenant-order/",
+  verifyToken,
+  verifyRoleTenant,
+  ordersController.tenantAllOrderlist
+)
 module.exports = router
