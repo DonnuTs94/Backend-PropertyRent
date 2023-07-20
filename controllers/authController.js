@@ -23,6 +23,7 @@ const { ENOENT_CODE } = require("../configs/constant/errorCode")
 const moment = require("moment/moment")
 
 const prisma = new PrismaClient()
+let tryAttempt = 0
 
 const authController = {
   registerUser: async (req, res) => {
@@ -79,11 +80,11 @@ const authController = {
         generateOtp,
       })
 
-      await emailer({
-        to: email,
-        html: htmlResult,
-        subject: "Your otp code",
-      })
+      // await emailer({
+      //   to: email,
+      //   html: htmlResult,
+      //   subject: "Your otp code",
+      // })
 
       res.status(200).json({
         newUser,
@@ -554,10 +555,22 @@ const authController = {
       })
 
       if (foundUserOtp.otp !== req.body.otp) {
+        tryAttempt++
+        console.log(tryAttempt)
         return res.status(400).json({
           message: "Invalid OTP",
         })
       }
+
+      if (tryAttempt === 3) {
+        await prisma.otp.delete({
+          where: {
+            id: foundUserOtp.id,
+          },
+        })
+      }
+
+      // tryAttempt = 0
 
       await prisma.user.update({
         where: {
@@ -578,6 +591,7 @@ const authController = {
         message: "Success verif user",
       })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
