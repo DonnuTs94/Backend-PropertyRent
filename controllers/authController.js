@@ -3,6 +3,9 @@ const bcrypt = require("bcrypt")
 const { signToken } = require("../lib/jwt")
 const { roleEnum } = require("../configs/constant.js")
 const fs = require("fs")
+const handlebars = require("handlebars")
+const emailer = require("../lib/emailer")
+
 const {
   TENANT_PROFILE_PATH,
   USER_PROFILE_PATH,
@@ -69,11 +72,25 @@ const authController = {
         },
       })
 
+      const rawHTML = fs.readFileSync("templates/sendOtp.html", "utf-8")
+      const compiledHTML = handlebars.compile(rawHTML)
+      const htmlResult = compiledHTML({
+        username,
+        generateOtp,
+      })
+
+      await emailer({
+        to: email,
+        html: htmlResult,
+        subject: "Your otp code",
+      })
+
       res.status(200).json({
         newUser,
         message: "User registered",
       })
     } catch (err) {
+      console.log(err)
       if (
         err.code === UNIQUE_CONSTRAINT &&
         err.meta?.target?.includes(TARGET_EMAIL)
@@ -142,6 +159,19 @@ const authController = {
           otp: generateOtp,
           expTime: new Date(moment().add(15, "minutes")),
         },
+      })
+
+      const rawHTML = fs.readFileSync("templates/sendOtp.html", "utf-8")
+      const compiledHTML = handlebars.compile(rawHTML)
+      const htmlResult = compiledHTML({
+        username,
+        generateOtp,
+      })
+
+      await emailer({
+        to: email,
+        html: htmlResult,
+        subject: "Your otp code",
       })
 
       res.status(200).json({
