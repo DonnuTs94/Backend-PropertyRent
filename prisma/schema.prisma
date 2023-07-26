@@ -25,6 +25,7 @@ model User {
   property      Properties[]
   Orders        Orders[]
   otp           Otp?
+  review        Review[]
 }
 
 model Otp {
@@ -57,6 +58,7 @@ model Properties {
   city           Cities           @relation(fields: [cityId], references: [id])
   cityId         String
   rooms          Rooms[]
+  Review         Review[]
 }
 
 model PropertyImages {
@@ -146,6 +148,19 @@ model Cities {
   peroperty  Properties[]
 }
 
+model Review {
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+  property   Properties @relation(fields: [propertyId], references: [id])
+  propertyId String
+  review     String     @db.Text
+  rating     Int
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@id([userId, propertyId])
+}
+
 enum Role {
   User
   Tenant
@@ -170,4 +185,5 @@ enum Status {
   waitingForConfirmation @map("Waiting for Confirmation")
   canceled               @map("Canceled")
   canceledTenant         @map("Canceled - Tenant")
+  completed              @map("Completed")
 }

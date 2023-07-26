@@ -1,8 +1,10 @@
 const express = require("express")
 const propertyController = require("../controllers/propertyController")
+const reviewController = require("../controllers/reviewController")
 const {
   verifyToken,
   verifyRoleTenant,
+  verifyRoleUser,
 } = require("../middlewares/authMiddleware")
 const {
   verifyTenantOwnership,
@@ -101,6 +103,13 @@ router.delete(
   verifyRoleTenant,
   verifyImageOwenership,
   propertyController.deletePropertyImagePath
+)
+
+router.post(
+  "/:id/review",
+  verifyToken,
+  verifyRoleUser,
+  reviewController.createReview
 )
 
 module.exports = router
