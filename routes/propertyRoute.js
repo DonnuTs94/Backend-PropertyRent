@@ -112,4 +112,18 @@ router.post(
   reviewController.createReview
 )
 
+router.get(
+  "/:id/review",
+  verifyToken,
+  verifyRoleUser,
+  reviewController.getUserReview
+)
+
+router.patch(
+  "/:id/review",
+  verifyToken,
+  verifyRoleUser,
+  reviewController.editUserReview
+)
+
 module.exports = router
