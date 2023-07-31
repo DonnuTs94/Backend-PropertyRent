@@ -5,9 +5,11 @@ const prisma = new PrismaClient()
 const search = {
   userGetAllProperty: async (req, res) => {
     try {
-      const propertyName = req.query.propertyName
-      const provincy = req.query.provincy
-      const city = req.query.city
+      // const propertyName = req.query.propertyName
+      // const provincy = req.query.provincy
+      // const city = req.query.city
+
+      const { propertyName, provincy, city, page } = req.query
       const currentDate = new Date(moment().format("YYYY-MM-DD"))
       const startDate = req.query.startDate ? req.query.startDate : currentDate
       const endDate = req.query.endDate
@@ -20,7 +22,12 @@ const search = {
         })
       }
 
+      const pageSize = 10
+      const offset = (page - 1) * parseInt(pageSize)
+
       const foundProperties = await prisma.properties.findMany({
+        take: pageSize,
+        skip: offset,
         where: {
           name: {
             contains: propertyName,
@@ -60,6 +67,21 @@ const search = {
         },
       })
 
+      const avgReview = await prisma.review.groupBy({
+        by: ["propertyId"],
+        where: {
+          propertyId: {
+            in: foundProperties.map((property) => property.id),
+          },
+        },
+        _avg: {
+          rating: true,
+        },
+        _count: {
+          rating: true,
+        },
+      })
+
       const filteredRoomPrice = foundProperties.filter((property) => {
         property.rooms = property.rooms.filter((room) => {
           if (room.roomPrice.length === 0) {
@@ -71,6 +93,7 @@ const search = {
         if (property.rooms.length === 0) {
           return false
         }
+
         return true
       })
 
@@ -93,6 +116,12 @@ const search = {
           message: "Data not found!",
         })
       }
+
+      filterRoomOrder.forEach((d) => {
+        const avgElement = avgReview.find((a) => a.propertyId == d.id)
+        delete avgElement.propertyId
+        d.review = avgElement
+      })
 
       return res.status(200).json({
         message: "Success",
