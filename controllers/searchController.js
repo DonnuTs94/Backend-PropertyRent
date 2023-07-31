@@ -170,6 +170,25 @@ const search = {
         },
       })
 
+      const avgReview = await prisma.review.groupBy({
+        by: ["propertyId"],
+        where: {
+          propertyId: foundPropertyById.id,
+        },
+        _avg: {
+          rating: true,
+        },
+        _count: {
+          rating: true,
+        },
+      })
+
+      const avgElement = avgReview.find(
+        (property) => property.propertyId == foundPropertyById.id
+      )
+      delete avgElement.propertyId
+      foundPropertyById.review = avgElement
+
       foundPropertyById.rooms = foundPropertyById.rooms.filter((room) => {
         const isUnavailable = room.order.some((od) => {
           return (
@@ -178,6 +197,9 @@ const search = {
           )
         })
         delete room.order
+        if (room.roomPrice.length === 0) {
+          return false
+        }
         return !isUnavailable
       })
 
