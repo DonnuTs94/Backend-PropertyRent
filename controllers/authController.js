@@ -90,7 +90,6 @@ const authController = {
         message: "User registered",
       })
     } catch (err) {
-      console.log(err)
       if (
         err.code === UNIQUE_CONSTRAINT &&
         err.meta?.target?.includes(TARGET_EMAIL)
