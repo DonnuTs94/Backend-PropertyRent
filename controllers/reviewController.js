@@ -5,24 +5,6 @@ const prisma = new PrismaClient()
 const reviewController = {
   createReview: async (req, res) => {
     try {
-      // const foundProperty = await prisma.properties.findFirst({
-      //   where: {
-      //     id: req.params.id,
-      //   },
-      //   include: {
-      //     rooms: {
-      //       include: {
-      //         order: {
-      //           where: {
-      //             userId: req.user.id,
-      //             status: "completed",
-      //           },
-      //         },
-      //       },
-      //     },
-      //   },
-      // })
-
       const foundProperty = await prisma.properties.findFirst({
         where: {
           id: req.params.id,
