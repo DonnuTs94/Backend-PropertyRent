@@ -23,27 +23,106 @@ model User {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
   property      Properties[]
+  Orders        Orders[]
+  otp           Otp?
+  review        Review[]
+}
+
+model Otp {
+  id        String   @id @default(uuid())
+  otp       String
+  expTime   DateTime @db.DateTime()
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Properties {
-  id          Int        @id @default(autoincrement())
-  name        String
-  description String     @db.Text
-  rules       String     @db.Text
-  facilities  String     @db.Text
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deleted     Boolean    @default(false)
-  user        User       @relation(fields: [userId], references: [id])
-  userId      String
-  category    Categories @relation(fields: [categoryId], references: [id])
-  categoryId  Int
-  province    Provincies @relation(fields: [provinceId], references: [id])
-  provinceId  Int
+  id             String           @id @default(uuid())
+  name           String
+  description    String           @db.Text
+  rules          String           @db.Text
+  facilities     String           @db.Text
+  address        String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deleted        Boolean          @default(false)
+  user           User             @relation(fields: [userId], references: [id])
+  userId         String
+  category       Categories       @relation(fields: [categoryId], references: [id])
+  categoryId     String
+  province       Provincies       @relation(fields: [provinceId], references: [id])
+  provinceId     String
+  propertyImages PropertyImages[]
+  city           Cities           @relation(fields: [cityId], references: [id])
+  cityId         String
+  rooms          Rooms[]
+  Review         Review[]
+}
+
+model PropertyImages {
+  id             String     @id @default(uuid())
+  propertyPicUrl String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  property       Properties @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId     String
+}
+
+model Rooms {
+  id         String       @id @default(uuid())
+  name       String
+  facilities String       @db.Text
+  capacity   Int
+  bedType    BedType //enum
+  deleted    Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  property   Properties   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String
+  roomImages RoomImages[]
+  roomPrice  RoomPrice[]
+  order      Orders[]
+}
+
+model RoomImages {
+  id         String   @id @default(uuid())
+  roomPicUrl String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  room       Rooms    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId     String
+}
+
+model RoomPrice {
+  id        String   @id @default(uuid())
+  price     Int
+  date      DateTime @db.Date()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  room      Rooms    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId    String
+}
+
+model Orders {
+  id         String   @id @default(uuid())
+  startDate  DateTime @db.Date()
+  endDate    DateTime @db.Date()
+  expDate    DateTime @db.DateTime()
+  totalPrice Int
+  status     Status
+  paymentUrl String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User?    @relation(fields: [userId], references: [id])
+  userId     String
+  room       Rooms?   @relation(fields: [roomId], references: [id])
+  roomId     String?
 }
 
 model Categories {
-  id        Int          @id @default(autoincrement())
+  id        String       @id @default(uuid())
   category  String
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
@@ -51,8 +130,8 @@ model Categories {
 }
 
 model Provincies {
-  id        Int          @id @default(autoincrement())
-  provincy  String
+  id        String       @id @default(uuid())
+  provincy  String       @unique
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   property  Properties[]
@@ -60,12 +139,26 @@ model Provincies {
 }
 
 model Cities {
-  id         Int        @id @default(autoincrement())
+  id         String       @id @default(uuid())
   city       String
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  province   Provincies   @relation(fields: [provinceId], references: [id], onDelete: Cascade)
+  provinceId String
+  peroperty  Properties[]
+}
+
+model Review {
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+  property   Properties @relation(fields: [propertyId], references: [id])
+  propertyId String
+  review     String     @db.Text
+  rating     Int
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
-  province   Provincies @relation(fields: [provinceId], references: [id])
-  provinceId Int
+
+  @@id([userId, propertyId])
 }
 
 enum Role {
@@ -76,4 +169,21 @@ enum Role {
 enum Gender {
   Male
   Female
+}
+
+enum BedType {
+  kingSize      @map("King Size")
+  singleBed     @map("Single Bed")
+  twinBed       @map("Twin Bed")
+  doubleBed     @map("Double Bed")
+  superKingSize @map("Super King Size")
+}
+
+enum Status {
+  waitingForPayment      @map("Waiting for Payment")
+  inProgress             @map("In Progress")
+  waitingForConfirmation @map("Waiting for Confirmation")
+  canceled               @map("Canceled")
+  canceledTenant         @map("Canceled - Tenant")
+  completed              @map("Completed")
 }
