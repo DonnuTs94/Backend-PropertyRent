@@ -79,18 +79,17 @@ const authController = {
         generateOtp,
       })
 
-      // await emailer({
-      //   to: email,
-      //   html: htmlResult,
-      //   subject: "Your otp code",
-      // })
+      await emailer({
+        to: email,
+        html: htmlResult,
+        subject: "Your otp code",
+      })
 
       res.status(200).json({
         newUser,
         message: "User registered",
       })
     } catch (err) {
-      console.log(err)
       if (
         err.code === UNIQUE_CONSTRAINT &&
         err.meta?.target?.includes(TARGET_EMAIL)

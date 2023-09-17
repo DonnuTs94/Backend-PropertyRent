@@ -3,6 +3,7 @@ const moment = require("moment")
 const automaticPaymentCheck = require("../schedule/paymentCheck")
 const fs = require("fs")
 const prisma = new PrismaClient()
+const updateStatusOrder = require("../schedule/updateStatusOrder")
 
 const ordersController = {
   createOrder: async (req, res) => {
@@ -211,6 +212,8 @@ const ordersController = {
         },
       })
 
+      updateStatusOrder(approveOrder)
+
       return res.status(200).json({
         message: "Success approve this order",
         data: approveOrder,
@@ -366,7 +369,6 @@ const ordersController = {
         data: filteredOrder,
       })
     } catch (err) {
-      console.log(err)
       return res.status(500).json({
         message: err.message,
       })
